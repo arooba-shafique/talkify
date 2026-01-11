@@ -45,7 +45,7 @@ def count_emoji(reactions_queryset, emoji_char):
     """
     return reactions_queryset.filter(emoji=emoji_char).count()
 
-from whatsapp.models import Contact  # Add this at the top if not already
+from chat.models import Contact  # Add this at the top if not already
 
 @register.filter
 def is_contact(user, other_user):

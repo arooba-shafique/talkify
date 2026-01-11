@@ -1,4 +1,3 @@
-# whatsapp/routing.py
 from django.urls import re_path
 from . import consumers # Make sure this import is correct
 

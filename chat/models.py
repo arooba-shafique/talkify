@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 class User(AbstractUser):
     phone_number = models.CharField(max_length=15, unique=True)
     profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
-    about = models.CharField(max_length=255, default="Hey there! I am using WhatsApp.")
+    about = models.CharField(max_length=255, default="Hey there! I am using Talkify.")
     last_seen = models.DateTimeField(default=timezone.now)
     is_online = models.BooleanField(default=False)
 

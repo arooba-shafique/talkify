@@ -22,7 +22,7 @@
 
   .right-panel {
     flex: 1;
-    background-image: url("/static/whatsapp-bg.png");
+    background-image: url("/static/chat-bg.png");
 
     background-size: cover;
     background-position: center;
@@ -192,11 +192,11 @@
     <div class="field-label">Your name</div>
     <input type="text" name="username" class="field-input" value="{{ user.username }}" required>
     <p style="font-size: 13px; color: #888; margin-top: 8px;">
-      This is not your username or PIN. This name will be visible to your WhatsApp contacts.
+      This is not your username or PIN. This name will be visible to your contacts.
     </p>
 
     <div class="field-label">About</div>
-    <input type="text" name="about" class="field-input" value="{{ user.about|default:'Hey there! I am using WhatsApp.' }}">
+    <input type="text" name="about" class="field-input" value="{{ user.about|default:'Hey there! I am using Talkify.' }}">
     <button type="submit" class="save-button">Save</button>
   </form>
 

@@ -1,4 +1,4 @@
-.whatsapp-container {
+.chat-container {
     display: flex;
     height: 88vh;
     width: 100%;
@@ -137,7 +137,7 @@
     display: flex;
     flex-direction: column;
     background-color: #E0F6C2;
-    background-image: url("/static/whatsapp-bg.png");
+    background-image: url("/static/chat-bg.png");
     background-size: cover;
     background-position: center;
 }

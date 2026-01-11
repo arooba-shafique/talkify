@@ -1,4 +1,3 @@
-# whatsapp/consumers.py
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
@@ -6,7 +5,6 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 
-# Import your models from whatsapp/models.py
 from .models import ChatGroup, GroupMessage # Assuming your models are here
 
 User = get_user_model()

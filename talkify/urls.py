@@ -6,7 +6,7 @@ import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('whatsapp.urls')),
+    path('', include('chat.urls')),
 ]
 
 # Serve media and static files during development
