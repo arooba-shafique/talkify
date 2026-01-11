@@ -44,7 +44,7 @@ Talkify is a full-featured chat application built with Django and WebSockets. It
 | Backend | Python, Django |
 | Frontend | HTML, Tailwind CSS, JavaScript |
 | Realtime | WebSockets (Django Channels) |
-| Database | SQLite (default, can use PostgreSQL) |
+| Database | SQLite  |
 | Version Control | Git & GitHub |
 
 ---
@@ -55,7 +55,8 @@ Talkify is a full-featured chat application built with Django and WebSockets. It
    ```bash
    git clone https://github.com/arooba-shafique/talkify.git
    cd talkify
-    ```
+    
+ ```
    
 **2. Create a virtual environment:**
  ```bash
