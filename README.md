@@ -51,7 +51,7 @@ Talkify is a full-featured chat application built with Django and WebSockets. It
 
 ## 🚀 Installation & Setup
 
-1. **Clone the repository:**
+**1. Clone the repository:**
    ```bash
    git clone https://github.com/arooba-shafique/talkify.git
    cd talkify
@@ -84,14 +84,15 @@ python manage.py runserver
 **6.Open your browser and go to http://127.0.0.1:8000/ to access Talkify.**
 
 **📂 Project Structure**
+ ```bash
 talkify/
-├── chat/                  # Main app for chat functionality
+├── chat/                  
 │   ├── models.py
 │   ├── views.py
-│   ├── consumers.py       # WebSockets logic
+│   ├── consumers.py       
 │   ├── templates/
 │   └── static/
-├── talkify/               # Project settings
+├── talkify/               
 │   ├── settings.py
 │   ├── urls.py
 │   ├── asgi.py
@@ -99,6 +100,7 @@ talkify/
 ├── manage.py
 ├── requirements.txt
 └── README.md
+ ```
 
 **👩‍💻 Usage**
 
