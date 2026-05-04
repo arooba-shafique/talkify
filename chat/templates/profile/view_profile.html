@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>{{ other_user.username }} - Profile</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,7 +11,7 @@
     body {
       min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+      background: #e5ddd5;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -21,19 +20,36 @@
 
     .profile-card {
       background: #fff;
-      border-radius: 24px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.10);
       border: 1px solid #e5e7eb;
       width: 100%;
-      max-width: 440px;
-      padding: 36px 28px 32px;
+      max-width: 420px;
+      overflow: hidden;
     }
 
+    /* Green top banner */
+    .card-banner {
+      background: #128c7e;
+      height: 90px;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .card-body {
+      padding: 0 24px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Avatar overlaps the banner */
     .avatar-wrap {
-      position: relative;
-      width: 110px;
-      height: 110px;
-      margin: 0 auto 20px;
+      width: 100px;
+      height: 100px;
+      margin-top: -50px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
     }
     .avatar-wrap img {
       width: 100%;
@@ -41,65 +57,55 @@
       border-radius: 50%;
       object-fit: cover;
       border: 4px solid #fff;
-      box-shadow: 0 2px 12px rgba(59,130,246,0.18);
-      outline: 3px solid #3b82f6;
-      outline-offset: 3px;
-    }
-    .online-dot {
-      position: absolute;
-      bottom: 6px;
-      right: 6px;
-      width: 16px;
-      height: 16px;
-      background: #22c55e;
-      border-radius: 50%;
-      border: 3px solid #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
     }
 
     .profile-name {
-      font-size: clamp(1.4rem, 5vw, 1.9rem);
+      font-size: clamp(1.3rem, 5vw, 1.7rem);
       font-weight: 700;
       color: #111827;
       text-align: center;
       word-break: break-word;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
-    .profile-label {
-      font-size: 13px;
-      color: #9ca3af;
+    .profile-sub {
+      font-size: 12px;
+      color: #128c7e;
+      font-weight: 600;
       text-align: center;
-      margin-bottom: 24px;
+      letter-spacing: .4px;
+      margin-bottom: 22px;
     }
 
     .info-box {
-      background: #f8fafc;
+      background: #f9fafb;
       border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 16px 18px;
+      border-radius: 12px;
+      padding: 14px 16px;
       width: 100%;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
     .info-row {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
+      gap: 12px;
     }
     .info-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: #eff6ff;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #e8f5f3;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
     .info-icon i {
-      font-size: 14px;
-      color: #3b82f6;
+      font-size: 13px;
+      color: #128c7e;
     }
     .info-content { min-width: 0; }
     .info-content .label {
@@ -108,7 +114,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: .5px;
-      margin-bottom: 1px;
+      margin-bottom: 2px;
     }
     .info-content .value {
       font-size: 14px;
@@ -121,13 +127,6 @@
       font-style: italic;
     }
 
-    .divider {
-      height: 1px;
-      background: #e5e7eb;
-      width: 100%;
-      margin-bottom: 24px;
-    }
-
     .msg-btn {
       display: flex;
       align-items: center;
@@ -135,39 +134,26 @@
       gap: 8px;
       width: 100%;
       padding: 13px 24px;
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      background: #25d366;
       color: #fff;
       font-size: 15px;
       font-weight: 600;
       border-radius: 50px;
       text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: transform .15s, box-shadow .15s;
-      box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+      transition: background .2s, transform .15s;
+      box-shadow: 0 4px 12px rgba(37,211,102,0.30);
     }
     .msg-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(59,130,246,0.45);
+      background: #1ebe5d;
       color: #fff;
+      transform: translateY(-1px);
     }
     .msg-btn:active { transform: scale(0.98); }
 
-    .back-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 16px;
-      font-size: 13px;
-      color: #6b7280;
-      text-decoration: none;
-    }
-    .back-link:hover { color: #3b82f6; }
-
     @media (max-width: 480px) {
-      .profile-card { padding: 28px 18px 24px; border-radius: 20px; }
-      .avatar-wrap { width: 90px; height: 90px; }
+      .card-banner { height: 75px; }
+      .avatar-wrap { width: 84px; height: 84px; margin-top: -42px; }
+      .card-body { padding: 0 16px 22px; }
     }
   </style>
 </head>
@@ -175,53 +161,46 @@
 
   <div class="profile-card">
 
-    <!-- Avatar -->
-    <div class="avatar-wrap">
-      {% if other_user.profile_picture %}
-        <img src="{{ other_user.profile_picture.url }}" alt="{{ other_user.username }}">
-      {% else %}
-        <img src="https://ui-avatars.com/api/?name={{ other_user.username }}&background=3b82f6&color=fff&size=128" alt="{{ other_user.username }}">
-      {% endif %}
-      <span class="online-dot"></span>
-    </div>
+    <div class="card-banner"></div>
 
-    <!-- Name -->
-    <div class="profile-name">{{ other_user.username }}</div>
-    <div class="profile-label"><i class="fas fa-user" style="font-size:11px;margin-right:4px;"></i>User Profile</div>
+    <div class="card-body">
 
-    <!-- Info Box -->
-    <div class="info-box">
-      <div class="info-row">
-        <div class="info-icon"><i class="fas fa-at"></i></div>
-        <div class="info-content">
-          <div class="label">Username</div>
-          <div class="value">{{ other_user.username }}</div>
-        </div>
+      <div class="avatar-wrap">
+        {% if other_user.profile_picture %}
+          <img src="{{ other_user.profile_picture.url }}" alt="{{ other_user.username }}">
+        {% else %}
+          <img src="https://ui-avatars.com/api/?name={{ other_user.username }}&background=128c7e&color=fff&size=128" alt="{{ other_user.username }}">
+        {% endif %}
       </div>
-      <div class="info-row">
-        <div class="info-icon"><i class="fas fa-info-circle"></i></div>
-        <div class="info-content">
-          <div class="label">About</div>
-          <div class="value {% if not other_user.about %}muted{% endif %}">
-            {% if other_user.about %}{{ other_user.about }}{% else %}No bio added.{% endif %}
+
+      <div class="profile-name">{{ other_user.username }}</div>
+      <div class="profile-sub">Talkify User</div>
+
+      <div class="info-box">
+        <div class="info-row">
+          <div class="info-icon"><i class="fas fa-at"></i></div>
+          <div class="info-content">
+            <div class="label">Username</div>
+            <div class="value">{{ other_user.username }}</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon"><i class="fas fa-info-circle"></i></div>
+          <div class="info-content">
+            <div class="label">About</div>
+            <div class="value {% if not other_user.about %}muted{% endif %}">
+              {% if other_user.about %}{{ other_user.about }}{% else %}No bio added.{% endif %}
+            </div>
           </div>
         </div>
       </div>
+
+      <a href="{% url 'chat_detail' other_user.id %}" class="msg-btn">
+        <i class="fas fa-paper-plane"></i>
+        Message {{ other_user.username }}
+      </a>
+
     </div>
-
-    <div class="divider"></div>
-
-    <!-- Message Button -->
-    <a href="{% url 'chat_detail' other_user.id %}" class="msg-btn">
-      <i class="fas fa-paper-plane"></i>
-      Message {{ other_user.username }}
-    </a>
-
-    <!-- Back -->
-    <a href="javascript:history.back()" class="back-link">
-      <i class="fas fa-arrow-left" style="font-size:11px;"></i> Go back
-    </a>
-
   </div>
 
 </body>
