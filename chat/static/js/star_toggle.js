@@ -1,42 +1,37 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleStarUrl = document.getElementById('toggleStarUrl')?.value;
-  if (!toggleStarUrl) {
-    console.error("Toggle star URL not found.");
-    return;
-  }
+import { globalData } from './globals.js';
 
-  document.querySelectorAll('.toggle-star').forEach(starIcon => {
-    starIcon.addEventListener('click', () => {
-      const msgId = starIcon.dataset.msgId;
-      if (!msgId) return;
+document.addEventListener("click", function (event) {
+    const starIcon = event.target.closest(".toggle-star");
+    if (!starIcon) return;
 
-      fetch(toggleStarUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: `message_id=${encodeURIComponent(msgId)}`
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          starIcon.classList.toggle('starred-icon', data.is_starred);
-          starIcon.classList.toggle('unstarred-icon', !data.is_starred);
-          starIcon.title = data.is_starred ? 'Unstar' : 'Star';
+    const messageId = starIcon.getAttribute("data-msg-id");
+    const isGroup   = starIcon.getAttribute("data-is-group") === "true";
+    if (!messageId) return;
+
+    const url = isGroup ? globalData.toggleStarGroupUrl : globalData.toggleStarUrl;
+    if (!url) {
+        console.error("Star URL not found in globalData");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("message_id", messageId);
+    formData.append("csrfmiddlewaretoken", globalData.csrfToken);
+
+    fetch(url, {
+        method: "POST",
+        headers: { "X-CSRFToken": globalData.csrfToken },
+        body: formData,
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.is_starred) {
+            starIcon.classList.remove("unstarred-icon");
+            starIcon.classList.add("starred-icon");
         } else {
-          alert('Error toggling star: ' + data.error);
+            starIcon.classList.remove("starred-icon");
+            starIcon.classList.add("unstarred-icon");
         }
-      })
-      .catch(console.error);
-    });
-  });
+    })
+    .catch(err => console.error("Star toggle error:", err));
 });
-function getCookie(name) {
-  const cookies = document.cookie.split(';');
-  for (let cookie of cookies) {
-    const [key, value] = cookie.trim().split('=');
-    if (key === name) return decodeURIComponent(value);
-  }
-  return null;
-}
