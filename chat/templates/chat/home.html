@@ -1,0 +1,637 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talkify</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        .chat-home-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            background-color: #e5ddd5;
+            overflow: hidden;
+        }
+
+        /* ICON BAR */
+        .icon-bar {
+            width: 60px;
+            background-color: #f0f2f5;
+            border-right: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-shrink: 0;
+        }
+
+        .icon-bar .top-icons,
+        .icon-bar .bottom-icons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .icon-bar i {
+            font-size: 18px;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .icon-bar i:hover { color: #128c7e; }
+
+        .icon-bar .bottom-icons a img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #ccc;
+        }
+
+        /* DROPDOWNS */
+        .settings-dropdown {
+            position: absolute;
+            bottom: 70px;
+            left: 65px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 999;
+            width: 180px;
+            padding: 8px;
+            display: none;
+        }
+
+        .status-dropdown {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000;
+            width: 170px;
+            padding: 8px;
+            display: none;
+        }
+
+        .menu-dropdown {
+            position: absolute;
+            top: 25px;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000;
+            width: 160px;
+            padding: 8px;
+            display: none;
+        }
+
+        .settings-dropdown a,
+        .status-dropdown a,
+        .menu-dropdown a {
+            display: block;
+            padding: 8px 10px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        .settings-dropdown a:hover,
+        .status-dropdown a:hover,
+        .menu-dropdown a:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 320px;
+            min-width: 260px;
+            max-width: 380px;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 10px 12px;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-header input {
+            flex: 1;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 14px;
+            background-color: #ececec;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .user-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .chat-item:hover { background-color: #f5f5f5; }
+
+        .profile-pic {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            flex-shrink: 0;
+            background-color: #ccc;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .name-time {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #111;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .chat-time {
+            font-size: 11px;
+            color: #999;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+
+        .last-message-preview {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .unread-badge {
+            background-color: #25d366;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            min-width: 18px;
+            text-align: center;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        /* MAIN */
+        .chat-home-main {
+            flex: 1;
+            background-image: url("{% static 'chat-bg.png' %}");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+        }
+
+        .select-chat-placeholder {
+            text-align: center;
+            background: rgba(255,255,255,0.85);
+            padding: 30px 40px;
+            border-radius: 16px;
+        }
+
+        .select-chat-placeholder i {
+            font-size: 48px;
+            color: #128c7e;
+            margin-bottom: 12px;
+        }
+
+        .select-chat-placeholder p {
+            font-size: 16px;
+            color: #555;
+            margin: 0;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .icon-bar { width: 50px; }
+            .sidebar { width: 100%; max-width: 100%; }
+            .chat-home-main { display: none; }
+            .chat-home-container.chat-open .sidebar { display: none; }
+            .chat-home-container.chat-open .chat-home-main { display: flex; width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            .icon-bar { display: none; }
+        }
+
+        .no-chats-found {
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+        @media (max-width: 768px) {
+    .chat-home-container {
+        flex-direction: column;
+    }
+
+    .chat-home-main { display: none; }
+
+    .sidebar {
+        width: 100%;
+        max-width: 100%;
+        flex: 1;
+        height: calc(100vh - 56px);
+    }
+
+    .user-list {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .icon-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 56px;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0;
+        border-top: 1px solid #ddd;
+        border-right: none;
+        background-color: #f0f2f5;
+        z-index: 100;
+    }
+
+    .icon-bar .top-icons,
+    .icon-bar .bottom-icons {
+        flex-direction: row;
+        gap: 0;
+        justify-content: space-around;
+        flex: 1;
+    }
+
+    /* Each icon gets equal tab width */
+    .icon-bar .top-icons > *,
+    .icon-bar .bottom-icons > * {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 56px;
+        cursor: pointer;
+        border-top: 2px solid transparent;
+        transition: border-color 0.2s, color 0.2s;
+    }
+
+    .icon-bar .top-icons > *:hover,
+    .icon-bar .bottom-icons > *:hover {
+        border-top-color: #128c7e;
+    }
+
+    .icon-bar i {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    /* Tab labels */
+    .icon-bar .top-icons > * i::after,
+    .icon-bar .bottom-icons > * i::after {
+        display: block;
+        font-size: 9px;
+        font-family: sans-serif;
+        font-style: normal;
+        color: #777;
+        margin-top: 2px;
+    }
+
+    .icon-bar .bottom-icons a img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    /* Fix dropdowns on mobile */
+    .settings-dropdown {
+        bottom: 60px;
+        left: 10px;
+        top: auto;
+    }
+
+    .status-dropdown {
+        bottom: 60px;
+        left: 10px;
+        top: auto;
+    }
+
+    .menu-dropdown {
+        top: auto;
+        bottom: 60px;
+        right: 10px;
+    }
+
+    /* Sidebar header compact */
+    .sidebar-header {
+        padding: 8px 10px;
+    }
+
+    #mobileMenuBtn { display: none; }
+}
+
+@media (max-width: 480px) {
+    .sidebar-header input {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
+    </style>
+</head>
+<body>
+
+<div class="chat-home-container">
+
+   
+<div class="icon-bar">
+    <div class="top-icons">
+        <div title="Chats">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+
+        <div style="position: relative;" title="Status">
+            <i class="fas fa-circle-notch" id="statusIcon"></i>
+            {% if has_unseen_status %}
+                <span style="position:absolute;top:6px;right:6px;width:8px;height:8px;background:green;border-radius:50%;border:1px solid white;"></span>
+            {% endif %}
+            <div id="statusMenu" class="status-dropdown">
+                <a href="{% url 'status_view' %}">👀 View Status</a>
+                <a href="{% url 'status_upload' %}">➕ Add Status</a>
+            </div>
+        </div>
+
+        <a href="{% url 'create_group' %}" title="Groups">
+            <i class="fas fa-users"></i>
+        </a>
+    </div>
+
+    <div class="bottom-icons">
+        <div style="position: relative;" title="Settings">
+            <i class="fas fa-cog" id="settingsIcon"></i>
+            <div id="settingsMenu" class="settings-dropdown">
+                <a href="{% url 'profile_sidebar' %}">Profile</a>
+                <a href="{% url 'help_center' %}">Help</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+
+        <a href="{% url 'profile_sidebar' %}" title="Profile">
+            {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" alt="Me"
+                     onerror="this.src='{% static 'default-profile.png' %}'">
+            {% else %}
+                <img src="{% static 'default-profile.png' %}" alt="Me">
+            {% endif %}
+        </a>
+    </div>
+</div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <!-- Add this inside sidebar-header, before the input -->
+<button class="d-md-none btn btn-sm me-2" id="mobileMenuBtn" style="background:none; border:none;">
+    <i class="fas fa-bars" style="font-size:18px; color:#555;"></i>
+</button>
+            <input type="text" id="chatSearch" placeholder="Search chats...">
+            <a href="{% url 'add_contact' %}" class="btn btn-success btn-sm rounded-pill px-3 border-0" style="font-size:12px; white-space:nowrap;">
+                + Add
+            </a>
+            <div style="position: relative;">
+                <i class="fas fa-ellipsis-v" id="menuIcon" style="cursor:pointer; color:#555; font-size:16px;"></i>
+                <div id="menuDropdown" class="menu-dropdown">
+                    <a href="{% url 'profile_sidebar' %}">Profile</a>
+                    <a href="{% url 'starred_messages' %}">Starred Messages</a>
+                    <a href="{% url 'create_group' %}">Create Group</a>
+                    <a href="{% url 'add_contact' %}">Add Contact</a>
+                    <a href="{% url 'logout' %}">Log out</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="user-list">
+            {% for chat_item in combined_chats_data %}
+                {% if chat_item.user_obj %}
+                    {% with user=chat_item.user_obj last_message=chat_item.last_message unread_count=chat_item.unread_count %}
+                        <a href="{% url 'chat_detail' user.id %}" class="chat-item">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="profile-pic"
+                                     onerror="this.src='{% static 'default-profile.png' %}'">
+                            {% else %}
+                                <img src="{% static 'default-profile.png' %}" alt="{{ user.username }}" class="profile-pic">
+                            {% endif %}
+                            <div class="chat-info">
+                                <div class="name-time">
+                                    <span class="chat-name">{{ user.username }}</span>
+                                    {% if last_message %}<span class="chat-time">{{ last_message.timestamp|date:"H:i" }}</span>{% endif %}
+                                </div>
+                                <div class="last-message-preview">
+                                    {% if last_message %}
+                                        {% if last_message.sender == request.user %}
+                                            <span style="margin-right:3px; font-size:11px; color:#888;">
+                                                {% if last_message.status == 'seen' %}<i class="fas fa-check-double" style="color:#34b7f1;"></i>
+                                                {% elif last_message.status == 'delivered' %}<i class="fas fa-check-double"></i>
+                                                {% else %}<i class="fas fa-check"></i>{% endif %}
+                                            </span>
+                                            <span style="color:#333; margin-right:3px;">You:</span>
+                                        {% endif %}
+                                        {% if last_message.is_deleted %}
+                                            <i>This message was deleted</i>
+                                        {% elif last_message.message_type == 'text' %}
+                                            {{ last_message.message|truncatechars:30 }}
+                                        {% elif last_message.message_type == 'image' %}
+                                            <i class="fas fa-image"></i> Image
+                                        {% elif last_message.message_type == 'video' %}
+                                            <i class="fas fa-video"></i> Video
+                                        {% elif last_message.message_type == 'audio' %}
+                                            <i class="fas fa-music"></i> Audio
+                                        {% elif last_message.file %}
+                                            <i class="fas fa-file"></i> File
+                                        {% endif %}
+                                    {% else %}
+                                        No messages yet.
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if unread_count > 0 %}
+                                <span class="unread-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                    {% endwith %}
+
+                {% elif chat_item.group_obj %}
+                    {% with group=chat_item.group_obj last_message=chat_item.last_message unread_count=chat_item.unread_count %}
+                        <a href="{% url 'group_chat_detail' group.id %}" class="chat-item">
+                            {% if group.icon %}
+                                <img src="{{ group.icon.url }}" alt="{{ group.name }}" class="profile-pic">
+                            {% else %}
+                                <img src="{% static 'default-group.png' %}" alt="{{ group.name }}" class="profile-pic">
+                            {% endif %}
+                            <div class="chat-info">
+                                <div class="name-time">
+                                    <span class="chat-name">{{ group.name }}</span>
+                                    {% if last_message %}<span class="chat-time">{{ last_message.timestamp|date:"H:i" }}</span>{% endif %}
+                                </div>
+                                <div class="last-message-preview">
+                                    {% if last_message %}
+                                        {% if last_message.sender == request.user %}
+                                            <span style="color:#333; margin-right:3px;">You:</span>
+                                        {% else %}
+                                            <span style="color:#333; margin-right:3px;">{{ last_message.sender.username }}:</span>
+                                        {% endif %}
+                                        {% if last_message.is_deleted %}
+                                            <i>This message was deleted</i>
+                                        {% elif last_message.message_type == 'text' %}
+                                            {{ last_message.message|truncatechars:30 }}
+                                        {% elif last_message.message_type == 'image' %}
+                                            <i class="fas fa-image"></i> Image
+                                        {% elif last_message.message_type == 'video' %}
+                                            <i class="fas fa-video"></i> Video
+                                        {% elif last_message.message_type == 'audio' %}
+                                            <i class="fas fa-music"></i> Audio
+                                        {% elif last_message.file %}
+                                            <i class="fas fa-file"></i> File
+                                        {% endif %}
+                                    {% else %}
+                                        No messages yet.
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if unread_count > 0 %}
+                                <span class="unread-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                    {% endwith %}
+                {% endif %}
+            {% empty %}
+                <p class="no-chats-found">No chats found. Start a new conversation!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="chat-home-main">
+        <div class="select-chat-placeholder">
+            <i class="fas fa-comments d-block"></i>
+            <p>Select a chat to start messaging</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
+<script type="module" src="{% static 'js/utils.js' %}"></script>
+<script type="module" src="{% static 'js/modals.js' %}"></script>
+<script type="module" src="{% static 'js/forward.js' %}"></script>
+<script type="module" src="{% static 'js/dropdowns.js' %}"></script>
+<script type="module" src="{% static 'js/star_toggle.js' %}"></script>
+<script type="module" src="{% static 'js/reactions.js' %}"></script>
+<script type="module" src="{% static 'js/emoji_picker.js' %}"></script>
+<script type="module" src="{% static 'js/emoji_reactions.js' %}"></script>
+<script type="module" src="{% static 'js/messages.js' %}"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Dropdowns
+    function setupDropdown(triggerId, menuId) {
+        const trigger = document.getElementById(triggerId);
+        const menu = document.getElementById(menuId);
+        if (!trigger || !menu) return;
+        trigger.addEventListener("click", function (e) {
+            e.stopPropagation();
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        });
+        document.addEventListener("click", function (e) {
+            if (!menu.contains(e.target) && e.target !== trigger) {
+                menu.style.display = "none";
+            }
+        });
+    }
+
+    setupDropdown("settingsIcon", "settingsMenu");
+    setupDropdown("statusIcon", "statusMenu");
+    setupDropdown("menuIcon", "menuDropdown");
+
+    // Search
+    const searchInput = document.getElementById("chatSearch");
+    if (searchInput) {
+        searchInput.addEventListener("keyup", function () {
+            const filter = this.value.toLowerCase();
+            document.querySelectorAll(".chat-item").forEach(entry => {
+                const name = entry.querySelector(".chat-name")?.textContent.toLowerCase() || '';
+                entry.style.display = name.includes(filter) ? "" : "none";
+            });
+        });
+    }
+});
+</script>
+
+</body>
+</html>

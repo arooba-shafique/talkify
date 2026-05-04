@@ -1,0 +1,552 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Group – Talkify</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    .app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      background-color: #e5ddd5;
+    }
+
+    /* ── DESKTOP ICON BAR ── */
+    .icon-bar {
+      width: 60px;
+      background-color: #f0f2f5;
+      border-right: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .icon-bar .top-icons,
+    .icon-bar .bottom-icons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .icon-bar i {
+      font-size: 20px;
+      color: #555;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .icon-bar i:hover { color: #128c7e; }
+    .icon-bar .active-icon i { color: #128c7e; }
+
+    .icon-bar .bottom-icons a img,
+    .icon-bar .bottom-icons img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid #ccc;
+    }
+
+    /* ── DROPDOWNS ── */
+    .settings-dropdown {
+      position: absolute;
+      bottom: 70px;
+      left: 65px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 999;
+      width: 180px;
+      padding: 8px;
+      display: none;
+    }
+
+    .status-dropdown {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 1000;
+      width: 170px;
+      padding: 8px;
+      display: none;
+    }
+
+    .settings-dropdown a,
+    .status-dropdown a {
+      display: block;
+      padding: 8px 10px;
+      text-decoration: none;
+      color: #333;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+    .settings-dropdown a:hover,
+    .status-dropdown a:hover { background-color: #f1f1f1; }
+
+    /* ── CREATE GROUP PANEL ── */
+    .form-panel {
+      width: 380px;
+      min-width: 280px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .form-panel-header {
+      background-color: #128c7e;
+      color: white;
+      padding: 60px 20px 20px;
+    }
+
+    .form-panel-header h5 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .form-panel-body {
+      padding: 24px 20px 30px;
+      flex: 1;
+    }
+
+    /* Group icon preview */
+    .icon-preview-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .icon-preview-wrapper img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      background: #eee;
+    }
+
+    .icon-upload-label {
+      position: absolute;
+      bottom: 0;
+      right: calc(50% - 54px);
+      background: #128c7e;
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      border: 2px solid white;
+    }
+
+    .field-label {
+      font-size: 12px;
+      color: #128c7e;
+      font-weight: 600;
+      margin-top: 20px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 10px 0;
+      border: none;
+      border-bottom: 1px solid #ddd;
+      font-size: 15px;
+      outline: none;
+      color: #111;
+      background: transparent;
+      transition: border-color 0.2s;
+    }
+    .field-input:focus { border-bottom-color: #128c7e; }
+
+    /* Members checkboxes */
+    .members-list {
+      margin-top: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .member-item:hover { background: #f5f5f5; }
+
+    .member-item input[type="checkbox"] {
+      accent-color: #128c7e;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .member-item img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .member-item span {
+      font-size: 14px;
+      color: #222;
+    }
+
+    /* hide default Django widget for members */
+    .django-members-widget { display: none; }
+
+    .create-button {
+      margin-top: 28px;
+      padding: 12px;
+      background-color: #25D366;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .create-button:hover { background-color: #1ebe5d; }
+
+    /* hide admin field (auto-set in view) */
+    .admin-field { display: none; }
+
+    /* ── RIGHT PANEL ── */
+    .right-panel {
+      flex: 1;
+      background-color: #e5ddd5;
+      background-image: url("{% static 'chat-bg.png' %}");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .right-panel-placeholder {
+      text-align: center;
+      background: rgba(255,255,255,0.85);
+      padding: 30px 40px;
+      border-radius: 16px;
+    }
+
+    .right-panel-placeholder i {
+      font-size: 48px;
+      color: #128c7e;
+      margin-bottom: 12px;
+    }
+
+    .right-panel-placeholder p {
+      font-size: 16px;
+      color: #555;
+      margin: 0;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      html, body { overflow: auto; }
+
+      .app-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        padding-bottom: 56px;
+      }
+
+      .icon-bar { display: none; }
+
+      .icon-bar-mobile {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 56px;
+        background-color: #f0f2f5;
+        border-top: 1px solid #ddd;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 200;
+      }
+
+      .icon-bar-mobile a,
+      .icon-bar-mobile .icon-tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 56px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #555;
+        position: relative;
+      }
+
+      .icon-bar-mobile i { font-size: 20px; }
+      .icon-bar-mobile img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ccc;
+      }
+      .icon-bar-mobile .active-icon i { color: #128c7e; }
+
+      .form-panel {
+        width: 100%;
+        min-width: unset;
+        border-right: none;
+      }
+
+      .right-panel { display: none; }
+
+      .settings-dropdown {
+        bottom: 60px;
+        left: 10px;
+        top: auto;
+      }
+      .status-dropdown {
+        bottom: 60px;
+        left: 10px;
+        top: auto;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .icon-bar-mobile { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- DESKTOP ICON BAR -->
+  <div class="icon-bar">
+    <div class="top-icons">
+      <a href="{% url 'chat_home' %}" title="Chats">
+        <i class="fas fa-comment-dots"></i>
+      </a>
+
+      <div style="position: relative;" title="Status">
+        <i class="fas fa-circle-notch" id="statusIcon"></i>
+        <div id="statusMenu" class="status-dropdown">
+          <a href="{% url 'status_view' %}">👀 View Status</a>
+          <a href="{% url 'status_upload' %}">➕ Add Status</a>
+        </div>
+      </div>
+
+      <a href="{% url 'create_group' %}" title="Groups" class="active-icon">
+        <i class="fas fa-users"></i>
+      </a>
+    </div>
+
+    <div class="bottom-icons">
+      <div style="position: relative;" title="Settings">
+        <i class="fas fa-cog" id="settingsIcon"></i>
+        <div id="settingsMenu" class="settings-dropdown">
+          <a href="{% url 'profile_sidebar' %}">Profile</a>
+          <a href="{% url 'help_center' %}">Help</a>
+          <a href="{% url 'logout' %}">Logout</a>
+        </div>
+      </div>
+
+      <a href="{% url 'profile_sidebar' %}" title="Profile">
+        {% if user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" alt="Me"
+               onerror="this.src='{% static 'default-profile.png' %}'">
+        {% else %}
+          <img src="{% static 'default-profile.png' %}" alt="Me">
+        {% endif %}
+      </a>
+    </div>
+  </div>
+
+  <!-- CREATE GROUP PANEL -->
+  <div class="form-panel">
+    <div class="form-panel-header">
+      <h5><i class="fas fa-arrow-left me-2" style="cursor:pointer;" onclick="history.back()"></i> New Group</h5>
+    </div>
+
+    <div class="form-panel-body">
+      <form method="POST" enctype="multipart/form-data" id="createGroupForm" action="{% url 'create_group' %}">
+        {% csrf_token %}
+
+        <!-- Group Icon -->
+        <div class="icon-preview-wrapper">
+          <img src="{% static 'default-group.png' %}" alt="Group Icon" id="groupIconPreview"
+               onerror="this.src='{% static 'default-profile.png' %}'">
+          <label class="icon-upload-label" for="groupIconInput" title="Set group icon">
+            <i class="fas fa-camera"></i>
+          </label>
+          <input type="file" name="icon" id="groupIconInput" accept="image/*" style="display:none;">
+        </div>
+
+        <!-- Group Name -->
+        <div class="field-label">Group Name</div>
+        <input type="text" name="name" class="field-input" required placeholder="Enter group name">
+
+        <!-- Admin (hidden, set by view) -->
+        <div class="admin-field">
+          {{ form.admin }}
+        </div>
+
+        <!-- Members -->
+        <div class="field-label">Add Members</div>
+        <div class="members-list" id="membersList">
+          {% for user_obj in form.members.field.queryset %}
+            {% if user_obj != request.user %}
+            <label class="member-item">
+              <input type="checkbox" name="members" value="{{ user_obj.id }}">
+              {% if user_obj.profile_picture %}
+                <img src="{{ user_obj.profile_picture.url }}" alt="{{ user_obj.username }}"
+                     onerror="this.src='{% static 'default-profile.png' %}'">
+              {% else %}
+                <img src="{% static 'default-profile.png' %}" alt="{{ user_obj.username }}">
+              {% endif %}
+              <span>{{ user_obj.username }}</span>
+            </label>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <button type="submit" class="create-button">
+          <i class="fas fa-check me-2"></i>Create Group
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="right-panel-placeholder">
+      <i class="fas fa-users d-block"></i>
+      <p>Create a new group chat</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="icon-bar-mobile" style="display:none;">
+  <a href="{% url 'chat_home' %}" title="Chats">
+    <i class="fas fa-comment-dots"></i>
+  </a>
+
+  <div class="icon-tab" id="mobileStatusIcon" style="position:relative;">
+    <i class="fas fa-circle-notch"></i>
+    <div id="mobileStatusMenu" class="status-dropdown" style="display:none;">
+      <a href="{% url 'status_view' %}">👀 View Status</a>
+      <a href="{% url 'status_upload' %}">➕ Add Status</a>
+    </div>
+  </div>
+
+  <a href="{% url 'create_group' %}" title="Groups" class="active-icon">
+    <i class="fas fa-users"></i>
+  </a>
+
+  <div class="icon-tab" id="mobileSettingsIcon" style="position:relative;">
+    <i class="fas fa-cog"></i>
+    <div id="mobileSettingsMenu" class="settings-dropdown" style="display:none;">
+      <a href="{% url 'profile_sidebar' %}">Profile</a>
+      <a href="{% url 'help_center' %}">Help</a>
+      <a href="{% url 'logout' %}">Logout</a>
+    </div>
+  </div>
+
+  <a href="{% url 'profile_sidebar' %}" title="Profile">
+    {% if user.profile_picture %}
+      <img src="{{ user.profile_picture.url }}" alt="Me"
+           onerror="this.src='{% static 'default-profile.png' %}'">
+    {% else %}
+      <img src="{% static 'default-profile.png' %}" alt="Me">
+    {% endif %}
+  </a>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // Live group icon preview
+  const iconInput = document.getElementById("groupIconInput");
+  const iconPreview = document.getElementById("groupIconPreview");
+  if (iconInput && iconPreview) {
+    iconInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => { iconPreview.src = e.target.result; };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // Dropdown helper
+  function setupDropdown(triggerId, menuId) {
+    const trigger = document.getElementById(triggerId);
+    const menu = document.getElementById(menuId);
+    if (!trigger || !menu) return;
+    trigger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    });
+    document.addEventListener("click", function (e) {
+      if (!menu.contains(e.target) && e.target !== trigger) {
+        menu.style.display = "none";
+      }
+    });
+  }
+
+  setupDropdown("settingsIcon", "settingsMenu");
+  setupDropdown("statusIcon", "statusMenu");
+  setupDropdown("mobileStatusIcon", "mobileStatusMenu");
+  setupDropdown("mobileSettingsIcon", "mobileSettingsMenu");
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,487 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help Center – Talkify</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    .app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      background-color: #e5ddd5;
+    }
+
+    /* ── DESKTOP ICON BAR ── */
+    .icon-bar {
+      width: 60px;
+      background-color: #f0f2f5;
+      border-right: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .icon-bar .top-icons,
+    .icon-bar .bottom-icons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .icon-bar i {
+      font-size: 20px;
+      color: #555;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .icon-bar i:hover { color: #128c7e; }
+    .icon-bar .active-icon i { color: #128c7e; }
+
+    .icon-bar .bottom-icons a img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid #ccc;
+    }
+
+    /* ── DROPDOWNS ── */
+    .settings-dropdown {
+      position: absolute;
+      bottom: 70px;
+      left: 65px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 999;
+      width: 180px;
+      padding: 8px;
+      display: none;
+    }
+
+    .status-dropdown {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 1000;
+      width: 170px;
+      padding: 8px;
+      display: none;
+    }
+
+    .settings-dropdown a,
+    .status-dropdown a {
+      display: block;
+      padding: 8px 10px;
+      text-decoration: none;
+      color: #333;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+    .settings-dropdown a:hover,
+    .status-dropdown a:hover { background-color: #f1f1f1; }
+
+    /* ── HELP PANEL ── */
+    .help-panel {
+      width: 400px;
+      min-width: 280px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .help-panel-header {
+      background-color: #128c7e;
+      color: white;
+      padding: 60px 20px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .help-panel-header h5 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .help-panel-body {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .help-section {
+      margin-bottom: 28px;
+      border-bottom: 1px solid #f1f1f1;
+      padding-bottom: 20px;
+    }
+
+    .help-section:last-child {
+      border-bottom: none;
+    }
+
+    .help-section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #128c7e;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .faq-item {
+      margin-bottom: 14px;
+    }
+
+    .faq-question {
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 4px;
+    }
+
+    .faq-answer {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+      padding-left: 10px;
+      border-left: 2px solid #25D366;
+    }
+
+    .help-link {
+      color: #128c7e;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .help-link:hover { text-decoration: underline; }
+
+    .app-info {
+      font-size: 13px;
+      color: #666;
+      line-height: 2;
+    }
+
+    /* ── RIGHT PANEL ── */
+    .right-panel {
+      flex: 1;
+      background-color: #e5ddd5;
+      background-image: url("{% static 'chat-bg.png' %}");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .right-panel-placeholder {
+      text-align: center;
+      background: rgba(255,255,255,0.85);
+      padding: 30px 40px;
+      border-radius: 16px;
+    }
+
+    .right-panel-placeholder i {
+      font-size: 48px;
+      color: #128c7e;
+      margin-bottom: 12px;
+    }
+
+    .right-panel-placeholder p {
+      font-size: 16px;
+      color: #555;
+      margin: 0;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      html, body { overflow: auto; }
+
+      .app-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        padding-bottom: 56px;
+      }
+
+      .icon-bar { display: none; }
+
+      .icon-bar-mobile {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 56px;
+        background-color: #f0f2f5;
+        border-top: 1px solid #ddd;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 200;
+      }
+
+      .icon-bar-mobile a,
+      .icon-bar-mobile .icon-tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 56px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #555;
+        position: relative;
+      }
+
+      .icon-bar-mobile i { font-size: 20px; }
+      .icon-bar-mobile img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ccc;
+      }
+      .icon-bar-mobile .active-icon i { color: #128c7e; }
+
+      .help-panel {
+        width: 100%;
+        min-width: unset;
+        border-right: none;
+      }
+
+      .right-panel { display: none; }
+
+      .settings-dropdown { bottom: 60px; left: 10px; top: auto; }
+      .status-dropdown { bottom: 60px; left: 10px; top: auto; }
+    }
+
+    @media (min-width: 769px) {
+      .icon-bar-mobile { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- DESKTOP ICON BAR -->
+  <div class="icon-bar">
+    <div class="top-icons">
+      <a href="{% url 'chat_home' %}" title="Chats">
+        <i class="fas fa-comment-dots"></i>
+      </a>
+      <div style="position: relative;" title="Status">
+        <i class="fas fa-circle-notch" id="statusIcon"></i>
+        <div id="statusMenu" class="status-dropdown">
+          <a href="{% url 'status_view' %}">👀 View Status</a>
+          <a href="{% url 'status_upload' %}">➕ Add Status</a>
+        </div>
+      </div>
+      <a href="{% url 'create_group' %}" title="Groups">
+        <i class="fas fa-users"></i>
+      </a>
+    </div>
+    <div class="bottom-icons">
+      <div style="position: relative;" title="Settings">
+        <i class="fas fa-cog" id="settingsIcon"></i>
+        <div id="settingsMenu" class="settings-dropdown">
+          <a href="{% url 'profile_sidebar' %}">Profile</a>
+          <a href="{% url 'help_center' %}">Help</a>
+          <a href="{% url 'logout' %}">Logout</a>
+        </div>
+      </div>
+      <a href="{% url 'profile_sidebar' %}" title="Profile">
+        {% if user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" alt="Me"
+               onerror="this.src='{% static 'default-profile.png' %}'">
+        {% else %}
+          <img src="{% static 'default-profile.png' %}" alt="Me">
+        {% endif %}
+      </a>
+    </div>
+  </div>
+
+  <!-- HELP PANEL -->
+  <div class="help-panel">
+    <div class="help-panel-header">
+      <h5>
+        <i class="fas fa-arrow-left me-2" style="cursor:pointer;" onclick="history.back()"></i>
+        Help Center
+      </h5>
+    </div>
+
+    <div class="help-panel-body">
+
+      <!-- FAQ -->
+      <div class="help-section">
+        <div class="help-section-title">
+          <i class="fas fa-question-circle"></i> Frequently Asked Questions
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">💬 How to delete messages?</div>
+          <div class="faq-answer">
+            Tap and hold the message you want to delete. If you're the sender, you'll see options to delete it for yourself or for everyone.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">🚫 How to block a contact?</div>
+          <div class="faq-answer">
+            Go to the user's profile and click the <strong>Block</strong> button. This prevents them from sending you messages.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">⭐ How to star a message?</div>
+          <div class="faq-answer">
+            Tap the star icon next to any message to save it. Find all starred messages from the menu.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">👥 How to create a group?</div>
+          <div class="faq-answer">
+            Click the Groups icon in the sidebar and select <strong>Create Group</strong>. Add members and set a group name.
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Support -->
+      <div class="help-section">
+        <div class="help-section-title">
+          <i class="fas fa-headset"></i> Contact Support
+        </div>
+        <p style="font-size:13px; color:#666; margin-bottom:8px;">Have an issue? Reach out to us:</p>
+        <a href="mailto:support@talkify.com" class="help-link">
+          <i class="fas fa-envelope me-1"></i> support@talkify.com
+        </a>
+      </div>
+
+      <!-- Privacy & Terms -->
+      <div class="help-section">
+        <div class="help-section-title">
+          <i class="fas fa-shield-alt"></i> Privacy & Terms
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <a href="{% url 'terms_of_service' %}" class="help-link">
+            <i class="fas fa-file-alt me-1"></i> Terms of Service
+          </a>
+          <a href="{% url 'privacy_policy' %}" class="help-link">
+            <i class="fas fa-lock me-1"></i> Privacy Policy
+          </a>
+        </div>
+      </div>
+
+      <!-- App Info -->
+      <div class="help-section">
+        <div class="help-section-title">
+          <i class="fas fa-info-circle"></i> App Information
+        </div>
+        <div class="app-info">
+          <div>Version: <strong>1.0.0</strong></div>
+          <div>Last Updated: <strong>May 2026</strong></div>
+          <div>Built with ❤️ using Django Channels</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="right-panel-placeholder">
+      <i class="fas fa-life-ring d-block"></i>
+      <p>Help & Support</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="icon-bar-mobile" style="display:none;">
+  <a href="{% url 'chat_home' %}" title="Chats">
+    <i class="fas fa-comment-dots"></i>
+  </a>
+  <div class="icon-tab" id="mobileStatusIcon" style="position:relative;">
+    <i class="fas fa-circle-notch"></i>
+    <div id="mobileStatusMenu" class="status-dropdown" style="display:none;">
+      <a href="{% url 'status_view' %}">👀 View Status</a>
+      <a href="{% url 'status_upload' %}">➕ Add Status</a>
+    </div>
+  </div>
+  <a href="{% url 'create_group' %}" title="Groups">
+    <i class="fas fa-users"></i>
+  </a>
+  <div class="icon-tab" id="mobileSettingsIcon" style="position:relative;">
+    <i class="fas fa-cog"></i>
+    <div id="mobileSettingsMenu" class="settings-dropdown" style="display:none;">
+      <a href="{% url 'profile_sidebar' %}">Profile</a>
+      <a href="{% url 'help_center' %}">Help</a>
+      <a href="{% url 'logout' %}">Logout</a>
+    </div>
+  </div>
+  <a href="{% url 'profile_sidebar' %}" title="Profile">
+    {% if user.profile_picture %}
+      <img src="{{ user.profile_picture.url }}" alt="Me"
+           onerror="this.src='{% static 'default-profile.png' %}'">
+    {% else %}
+      <img src="{% static 'default-profile.png' %}" alt="Me">
+    {% endif %}
+  </a>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  function setupDropdown(triggerId, menuId) {
+    const trigger = document.getElementById(triggerId);
+    const menu = document.getElementById(menuId);
+    if (!trigger || !menu) return;
+    trigger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    });
+    document.addEventListener("click", function (e) {
+      if (!menu.contains(e.target) && e.target !== trigger) {
+        menu.style.display = "none";
+      }
+    });
+  }
+
+  setupDropdown("settingsIcon", "settingsMenu");
+  setupDropdown("statusIcon", "statusMenu");
+  setupDropdown("mobileStatusIcon", "mobileStatusMenu");
+  setupDropdown("mobileSettingsIcon", "mobileSettingsMenu");
+});
+</script>
+
+</body>
+</html>

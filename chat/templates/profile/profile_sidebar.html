@@ -1,0 +1,526 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile – Talkify</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── LAYOUT ── */
+    .app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      background-color: #e5ddd5;
+    }
+
+    /* ── ICON BAR (desktop: left column) ── */
+    .icon-bar {
+      width: 60px;
+      background-color: #f0f2f5;
+      border-right: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .icon-bar .top-icons,
+    .icon-bar .bottom-icons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .icon-bar i {
+      font-size: 20px;
+      color: #555;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .icon-bar i:hover { color: #128c7e; }
+
+    .icon-bar .bottom-icons a img,
+    .icon-bar .bottom-icons img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid #ccc;
+    }
+
+    /* active page highlight */
+    .icon-bar a.active-icon i { color: #128c7e; }
+
+    /* ── DROPDOWNS ── */
+    .settings-dropdown {
+      position: absolute;
+      bottom: 70px;
+      left: 65px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 999;
+      width: 180px;
+      padding: 8px;
+      display: none;
+    }
+
+    .status-dropdown {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 1000;
+      width: 170px;
+      padding: 8px;
+      display: none;
+    }
+
+    .settings-dropdown a,
+    .status-dropdown a {
+      display: block;
+      padding: 8px 10px;
+      text-decoration: none;
+      color: #333;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+    .settings-dropdown a:hover,
+    .status-dropdown a:hover { background-color: #f1f1f1; }
+
+    /* ── PROFILE PANEL ── */
+    .profile-panel {
+      width: 360px;
+      min-width: 280px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .profile-panel-header {
+      background-color: #128c7e;
+      color: white;
+      padding: 60px 20px 20px;
+    }
+
+    .profile-panel-header h5 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .profile-panel-body {
+      padding: 0 20px 30px;
+      flex: 1;
+    }
+
+    .avatar-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: -50px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .avatar-wrapper img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .avatar-upload-label {
+      position: absolute;
+      bottom: 0;
+      right: calc(50% - 58px);
+      background: #128c7e;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      border: 2px solid white;
+    }
+
+    .field-label {
+      font-size: 12px;
+      color: #128c7e;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 10px 0;
+      border: none;
+      border-bottom: 1px solid #ddd;
+      font-size: 15px;
+      outline: none;
+      color: #111;
+      background: transparent;
+      transition: border-color 0.2s;
+    }
+    .field-input:focus { border-bottom-color: #128c7e; }
+
+    .save-button {
+      margin-top: 32px;
+      padding: 12px;
+      background-color: #25D366;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .save-button:hover { background-color: #1ebe5d; }
+
+    /* success message */
+    .success-toast {
+      display: none;
+      background: #25D366;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      margin-top: 12px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    /* ── RIGHT PANEL ── */
+    .right-panel {
+      flex: 1;
+      background-color: #e5ddd5;
+      background-image: url("{% static 'chat-bg.png' %}");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .right-panel-placeholder {
+      text-align: center;
+      background: rgba(255,255,255,0.85);
+      padding: 30px 40px;
+      border-radius: 16px;
+    }
+
+    .right-panel-placeholder i {
+      font-size: 48px;
+      color: #128c7e;
+      margin-bottom: 12px;
+    }
+
+    .right-panel-placeholder p {
+      font-size: 16px;
+      color: #555;
+      margin: 0;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      html, body { overflow: auto; }
+
+      .app-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        padding-bottom: 56px; /* space for bottom bar */
+      }
+
+      /* hide desktop icon bar */
+      .icon-bar {
+        display: none;
+      }
+
+      /* bottom nav bar */
+      .icon-bar-mobile {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 56px;
+        background-color: #f0f2f5;
+        border-top: 1px solid #ddd;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 200;
+      }
+
+      .icon-bar-mobile a,
+      .icon-bar-mobile .icon-tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 56px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #555;
+        position: relative;
+      }
+
+      .icon-bar-mobile i { font-size: 20px; }
+      .icon-bar-mobile img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ccc;
+      }
+
+      .icon-bar-mobile .active-icon i { color: #128c7e; }
+
+      /* profile panel full width on mobile */
+      .profile-panel {
+        width: 100%;
+        min-width: unset;
+        border-right: none;
+      }
+
+      /* hide right panel on mobile */
+      .right-panel { display: none; }
+
+      /* fix dropdown positions on mobile */
+      .settings-dropdown {
+        bottom: 60px;
+        left: 10px;
+        top: auto;
+      }
+      .status-dropdown {
+        bottom: 60px;
+        left: 10px;
+        top: auto;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .icon-bar-mobile { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- DESKTOP ICON BAR -->
+  <div class="icon-bar">
+    <div class="top-icons">
+      <a href="{% url 'chat_home' %}" title="Chats">
+        <i class="fas fa-comment-dots"></i>
+      </a>
+
+      <div style="position: relative;" title="Status">
+        <i class="fas fa-circle-notch" id="statusIcon"></i>
+        <div id="statusMenu" class="status-dropdown">
+          <a href="{% url 'status_view' %}">👀 View Status</a>
+          <a href="{% url 'status_upload' %}">➕ Add Status</a>
+        </div>
+      </div>
+
+      <a href="{% url 'create_group' %}" title="Groups">
+        <i class="fas fa-users"></i>
+      </a>
+    </div>
+
+    <div class="bottom-icons">
+      <div style="position: relative;" title="Settings">
+        <i class="fas fa-cog" id="settingsIcon"></i>
+        <div id="settingsMenu" class="settings-dropdown">
+          <a href="{% url 'profile_sidebar' %}">Profile</a>
+          <a href="{% url 'help_center' %}">Help</a>
+          <a href="{% url 'logout' %}">Logout</a>
+        </div>
+      </div>
+
+      <!-- Profile avatar — active state -->
+      <a href="{% url 'profile_sidebar' %}" title="Profile" class="active-icon">
+        {% if user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" alt="Me"
+               onerror="this.src='{% static 'default-profile.png' %}'">
+        {% else %}
+          <img src="{% static 'default-profile.png' %}" alt="Me">
+        {% endif %}
+      </a>
+    </div>
+  </div>
+
+  <!-- PROFILE PANEL -->
+  <div class="profile-panel">
+    <div class="profile-panel-header">
+      <h5>Profile</h5>
+    </div>
+
+    <div class="profile-panel-body">
+      <form method="POST" action="{% url 'profile_sidebar' %}" enctype="multipart/form-data" id="profileForm">
+        {% csrf_token %}
+
+        <!-- Avatar -->
+        <div class="avatar-wrapper">
+          {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" alt="Profile" id="avatarPreview"
+                 onerror="this.src='{% static 'default-profile.png' %}'">
+          {% else %}
+            <img src="{% static 'default-profile.png' %}" alt="Profile" id="avatarPreview">
+          {% endif %}
+          <label class="avatar-upload-label" for="profilePicInput" title="Change photo">
+            <i class="fas fa-camera"></i>
+          </label>
+          <input type="file" name="profile_picture" id="profilePicInput" accept="image/*" style="display:none;">
+        </div>
+
+        <!-- Name -->
+        <div class="field-label">Your name</div>
+        <input type="text" name="username" class="field-input"
+               value="{{ user.username }}" required placeholder="Enter your name">
+
+        <!-- About -->
+        <div class="field-label">About</div>
+        <input type="text" name="about" class="field-input"
+               value="{{ user.about|default:'Hey there! I am using Talkify.' }}"
+               placeholder="About">
+
+        <button type="submit" class="save-button">Save</button>
+        {% if messages %}
+          <div class="success-toast" style="display:block;">
+            {% for message in messages %}{{ message }}{% endfor %}
+          </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL (desktop only) -->
+  <div class="right-panel">
+    <div class="right-panel-placeholder">
+      <i class="fas fa-user-circle d-block"></i>
+      <p>Your profile information</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE BOTTOM NAV BAR -->
+<div class="icon-bar-mobile" style="display:none;">
+  <a href="{% url 'chat_home' %}" title="Chats">
+    <i class="fas fa-comment-dots"></i>
+  </a>
+
+  <div class="icon-tab" id="mobileStatusIcon" title="Status" style="position:relative;">
+    <i class="fas fa-circle-notch"></i>
+    <div id="mobileStatusMenu" class="status-dropdown" style="display:none;">
+      <a href="{% url 'status_view' %}">👀 View Status</a>
+      <a href="{% url 'status_upload' %}">➕ Add Status</a>
+    </div>
+  </div>
+
+  <a href="{% url 'create_group' %}" title="Groups">
+    <i class="fas fa-users"></i>
+  </a>
+
+  <div class="icon-tab" id="mobileSettingsIcon" title="Settings" style="position:relative;">
+    <i class="fas fa-cog"></i>
+    <div id="mobileSettingsMenu" class="settings-dropdown" style="display:none;">
+      <a href="{% url 'profile_sidebar' %}">Profile</a>
+      <a href="{% url 'help_center' %}">Help</a>
+      <a href="{% url 'logout' %}">Logout</a>
+    </div>
+  </div>
+
+  <!-- Profile avatar in mobile bar -->
+  <a href="{% url 'profile_sidebar' %}" title="Profile" class="active-icon">
+    {% if user.profile_picture %}
+      <img src="{{ user.profile_picture.url }}" alt="Me"
+           onerror="this.src='{% static 'default-profile.png' %}'">
+    {% else %}
+      <img src="{% static 'default-profile.png' %}" alt="Me">
+    {% endif %}
+  </a>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // Live avatar preview when file is chosen
+  const picInput = document.getElementById("profilePicInput");
+  const avatarPreview = document.getElementById("avatarPreview");
+  if (picInput && avatarPreview) {
+    picInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => { avatarPreview.src = e.target.result; };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // Dropdown helper
+  function setupDropdown(triggerId, menuId) {
+    const trigger = document.getElementById(triggerId);
+    const menu = document.getElementById(menuId);
+    if (!trigger || !menu) return;
+    trigger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    });
+    document.addEventListener("click", function (e) {
+      if (!menu.contains(e.target) && e.target !== trigger) {
+        menu.style.display = "none";
+      }
+    });
+  }
+
+  setupDropdown("settingsIcon", "settingsMenu");
+  setupDropdown("statusIcon", "statusMenu");
+  setupDropdown("mobileStatusIcon", "mobileStatusMenu");
+  setupDropdown("mobileSettingsIcon", "mobileSettingsMenu");
+
+  // Auto-hide success toast
+  const toast = document.querySelector(".success-toast");
+  if (toast && toast.style.display === "block") {
+    setTimeout(() => { toast.style.display = "none"; }, 3000);
+  }
+});
+</script>
+
+</body>
+</html>
