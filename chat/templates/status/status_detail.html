@@ -1,16 +1,125 @@
-{% extends 'base.html' %}
-{% block content %}
-<h2>{{ status.user.username }}'s Status</h2>
-<img src="{{ status.image.url }}" alt="Status" style="height: 400px; width: auto; border-radius: 10px;"><br>
-<p>{{ status.caption }}</p>
-<p>Posted: {{ status.created_at|timesince }} ago</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View Status</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-{% if request.user == status.user %}
-  <p><strong>Viewed by:</strong> {{ status.viewers.count }} people</p>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  h2 {
+    color: #075e54;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-left: 5px;
+    font-size: clamp(16px, 4vw, 22px);
+  }
+
+  .status-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .status-image {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+  }
+
+  .status-wrapper p {
+    margin-top: 14px;
+    font-size: 15px;
+    color: #333;
+    line-height: 1.55;
+  }
+
+  .status-wrapper p strong {
+    color: #075e54;
+  }
+
+  .status-wrapper ul {
+    margin-top: 8px;
+    padding-left: 20px;
+  }
+
+  .status-wrapper ul li {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #444;
+  }
+
+  /* =====================
+     RESPONSIVE BREAKPOINTS
+  ===================== */
+
+  @media (max-width: 480px) {
+    body { padding: 0; }
+    .status-wrapper {
+      border-radius: 0;
+      padding: 14px 14px;
+      min-height: 100vh;
+    }
+    .status-image { max-height: 260px; border-radius: 8px; }
+    .status-wrapper p { font-size: 14px; }
+    .status-wrapper ul li { font-size: 13px; }
+  }
+
+  @media (min-width: 481px) and (max-width: 767px) {
+    body { padding: 14px; }
+    .status-image { max-height: 320px; }
+  }
+
+  @media (min-width: 768px) {
+    body { padding: 36px 20px; }
+    .status-wrapper { padding: 28px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="status-wrapper">
+
+  <!-- {{ status.user.username }}'s Status -->
+  <h2>username's Status</h2>
+
+  <!-- {{ status.image.url }} -->
+  <img
+    class="status-image"
+    src="https://placehold.co/600x400/128c7e/fff?text=Status+Image"
+    alt="Status"
+  >
+
+  <!-- {{ status.caption }} -->
+  <p>Caption goes here.</p>
+
+  <!-- {{ status.created_at|timesince }} -->
+  <p>Posted: 2 hours ago</p>
+
+  <!-- {% if request.user == status.user %} -->
+  <!-- {{ status.viewers.count }} -->
+  <p><strong>Viewed by:</strong> 0 people</p>
   <ul>
-    {% for viewer in status.viewers.all %}
-      <li>{{ viewer.username }}</li>
-    {% endfor %}
+    <!-- {% for viewer in status.viewers.all %} -->
+    <!-- <li>{{ viewer.username }}</li> -->
+    <!-- {% endfor %} -->
   </ul>
-{% endif %}
-{% endblock %}
+  <!-- {% endif %} -->
+
+</div>
+
+</body>
+</html>
