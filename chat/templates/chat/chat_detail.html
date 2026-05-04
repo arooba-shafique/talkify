@@ -231,6 +231,40 @@
         }
         .chat-header-actions i:hover { color: #128c7e; }
 
+        /* ── IN-CHAT SEARCH BAR ── */
+        .chat-search-bar {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: #f0f2f5;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+        .chat-search-bar input {
+            flex: 1;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 14px;
+            background: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        .chat-search-bar .search-count {
+            font-size: 12px;
+            color: #888;
+            white-space: nowrap;
+        }
+        .chat-search-bar .search-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #888;
+            padding: 2px 6px;
+            line-height: 1;
+        }
+
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -437,21 +471,14 @@
            MOBILE ≤ 768px
         ════════════════════════════════ */
         @media (max-width: 768px) {
-
             .app-shell { flex-direction: column; }
-
-            /* HIDE icon bar completely on mobile */
             .icon-bar { display: none; }
-
-            /* Sidebar: full screen */
             .sidebar {
                 width: 100%;
                 max-width: 100%;
                 height: 100vh;
                 border-right: none;
             }
-
-            /* Chat section: slides in from right, full screen */
             .chat-section {
                 position: fixed;
                 top: 0; left: 0; right: 0; bottom: 0;
@@ -463,25 +490,13 @@
                 flex-direction: column;
                 background: #e5ddd5;
             }
-
-            .app-shell.chat-open .chat-section {
-                transform: translateX(0);
-            }
-            .app-shell.chat-open .sidebar {
-                display: none;
-            }
-
-            /* Show back button */
+            .app-shell.chat-open .chat-section { transform: translateX(0); }
+            .app-shell.chat-open .sidebar { display: none; }
             .back-btn { display: flex; }
-
-            /* Wider bubbles */
             .chat-bubble { max-width: 86%; }
-
-            /* Dropdown positions on mobile */
             .settings-dropdown { top: 56px; left: 8px; bottom: auto; }
             .status-dropdown   { top: 56px; left: 8px; bottom: auto; }
             .menu-dropdown     { top: 28px; right: 8px; bottom: auto; left: auto; }
-
             #messageInput { font-size: 16px; }
             .sidebar-header input { font-size: 16px; }
         }
@@ -655,8 +670,6 @@
                      onerror="this.src='{% static 'default-profile.png' %}'">
                 <div class="chat-header-info">
                     <div class="chat-header-name">{{ receiver.username }}</div>
-                    <!-- NOTE: "online" is STATIC — update via WebSocket for real-time status -->
-                    
                 </div>
             </a>
             {% else %}
@@ -682,6 +695,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- IN-CHAT SEARCH BAR -->
+        <div class="chat-search-bar" id="chatSearchBar">
+            <input type="text" id="chatMsgSearch" placeholder="Search messages..." autocomplete="off">
+            <span class="search-count" id="chatSearchCount"></span>
+            <button class="search-close" id="closeChatSearch" type="button">✕</button>
         </div>
 
         <div class="chat-messages" id="chatBox">
@@ -743,9 +763,13 @@
                         {{ msg.timestamp|date:"h:i A" }}
                         {% if not msg.is_deleted and request.user not in msg.deleted_for.all %}
                             {% if msg.id in starred_msg_ids %}
-                                <i class="fas fa-star toggle-star starred-icon" data-msg-id="{{ msg.id }}"></i>
+                                <i class="fas fa-star toggle-star starred-icon"
+                                   data-msg-id="{{ msg.id }}"
+                                   data-is-group="{% if is_group %}true{% else %}false{% endif %}"></i>
                             {% else %}
-                                <i class="fas fa-star toggle-star unstarred-icon" data-msg-id="{{ msg.id }}"></i>
+                                <i class="fas fa-star toggle-star unstarred-icon"
+                                   data-msg-id="{{ msg.id }}"
+                                   data-is-group="{% if is_group %}true{% else %}false{% endif %}"></i>
                             {% endif %}
                             {% if msg.sender == request.user %}
                             <span class="tick-icons">
@@ -877,7 +901,8 @@
     "receiverId": {{ receiver.id | default:"null" | safe }},
     {% endif %}
     "checkNewMessagesUrl": "{% url 'check_new_messages' %}",
-    "toggleStarUrl": "{% url 'toggle_starred_message' %}"
+    "toggleStarUrl": "{% url 'toggle_starred_message' %}",
+    "toggleStarGroupUrl": "{% url 'toggle_starred_group_message' %}"
 }
 </script>
 
@@ -1015,6 +1040,65 @@ document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll(".reaction-menu").forEach(m => m.style.display = "none");
         }
     });
+
+    /* ── IN-CHAT MESSAGE SEARCH ── */
+    const headerSearchIcon = document.getElementById("headerSearchIcon");
+    const chatSearchBar    = document.getElementById("chatSearchBar");
+    const chatMsgSearch    = document.getElementById("chatMsgSearch");
+    const chatSearchCount  = document.getElementById("chatSearchCount");
+    const closeChatSearch  = document.getElementById("closeChatSearch");
+
+    function clearChatSearch() {
+        if (chatMsgSearch) chatMsgSearch.value = "";
+        if (chatSearchBar) chatSearchBar.style.display = "none";
+        if (chatSearchCount) chatSearchCount.textContent = "";
+        document.querySelectorAll("#chatBox .chat-bubble").forEach(b => {
+            const t = b.querySelector(".message-text");
+            if (t && t._originalHTML !== undefined) t.innerHTML = t._originalHTML;
+            b.style.opacity = "1";
+        });
+    }
+
+    if (headerSearchIcon) {
+        headerSearchIcon.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const isOpen = chatSearchBar.style.display === "flex";
+            if (isOpen) { clearChatSearch(); }
+            else { chatSearchBar.style.display = "flex"; chatMsgSearch?.focus(); }
+        });
+    }
+
+    if (chatMsgSearch) {
+        chatMsgSearch.addEventListener("input", function () {
+            const q = this.value.trim().toLowerCase();
+            let matches = 0;
+            document.querySelectorAll("#chatBox .chat-bubble").forEach(b => {
+                const t = b.querySelector(".message-text");
+                if (!t) { b.style.opacity = q ? "0.3" : "1"; return; }
+                if (t._originalHTML === undefined) t._originalHTML = t.innerHTML;
+                const plain = t._originalHTML.replace(/<[^>]+>/g, "");
+                if (!q) { t.innerHTML = t._originalHTML; b.style.opacity = "1"; return; }
+                const idx = plain.toLowerCase().indexOf(q);
+                if (idx >= 0) {
+                    t.innerHTML = plain.slice(0, idx)
+                        + '<mark style="background:#ffd700;border-radius:2px;padding:0 1px;">'
+                        + plain.slice(idx, idx + q.length)
+                        + '</mark>'
+                        + plain.slice(idx + q.length);
+                    b.style.opacity = "1";
+                    matches++;
+                } else {
+                    t.innerHTML = t._originalHTML;
+                    b.style.opacity = "0.3";
+                }
+            });
+            if (chatSearchCount) chatSearchCount.textContent = q ? matches + " found" : "";
+        });
+    }
+
+    if (closeChatSearch) {
+        closeChatSearch.addEventListener("click", clearChatSearch);
+    }
 
     /* ── iOS KEYBOARD HANDLING ── */
     if (window.visualViewport) {
