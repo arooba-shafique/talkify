@@ -1,91 +1,257 @@
-{% extends 'base.html' %}
 {% load static %}
-{% block content %}
-<h2 class="text-lg font-bold p-4">⭐ Starred Messages</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Starred Messages – Talkify</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<div class="p-4">
-  <h3 class="font-semibold mb-2 text-green-600">Direct Messages</h3>
-  {% for msg in direct_starred %}
-    <div class="border border-gray-300 rounded-lg p-3 mb-3 bg-white shadow">
-      <div><strong>From:</strong> {{ msg.sender.username }}</div>
-      <div><strong>To:</strong> {{ msg.receiver.username }}</div>
-      
-      {% if msg.message_type == 'text' %}
-        <p>{{ msg.message }}</p>
-      {% elif msg.message_type == 'image' %}
-        {% if msg.file %} {# ADD THIS CHECK #}
-          <img src="{{ msg.file.url }}" alt="image" class="w-32 rounded mt-2">
-        {% else %}
-          <p class="text-red-500">Image file missing.</p> {# Optional: Display a message #}
-        {% endif %}
-      {% elif msg.message_type == 'video' %}
-        {% if msg.file %} {# ADD THIS CHECK #}
-          <video src="{{ msg.file.url }}" controls class="w-64 mt-2"></video>
-        {% else %}
-          <p class="text-red-500">Video file missing.</p> {# Optional: Display a message #}
-        {% endif %}
-      {% elif msg.message_type == 'audio' %}
-        {% if msg.file %} {# ADD THIS CHECK #}
-          <audio src="{{ msg.file.url }}" controls class="mt-2"></audio>
-        {% else %}
-          <p class="text-red-500">Audio file missing.</p> {# Optional: Display a message #}
-        {% endif %}
-      {% else %} {# For 'file' or other types not explicitly handled #}
-        {% if msg.file %} {# ADD THIS CHECK #}
-          <a href="{{ msg.file.url }}" download class="text-blue-500 underline mt-2">Download File</a>
-        {% else %}
-          <p class="text-red-500">File missing.</p> {# Optional: Display a message #}
-        {% endif %}
-      {% endif %}
-      
-      <small class="text-gray-500">{{ msg.timestamp|date:"d M Y, H:i" }}</small>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #e5ddd5;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      background: #128c7e;
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .page-header a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .page-header h1 {
+      font-size: 17px;
+      font-weight: 600;
+    }
+    .page-header span {
+      font-size: 13px;
+      opacity: .8;
+    }
+
+    .content {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 12px 12px 32px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #128c7e;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      padding: 16px 4px 8px;
+    }
+
+    .msg-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      position: relative;
+    }
+    .msg-card .meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .msg-card .meta img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .msg-card .meta .name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111;
+    }
+    .msg-card .meta .group-tag {
+      font-size: 11px;
+      background: #e8f5f3;
+      color: #128c7e;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .msg-card .meta .time {
+      font-size: 11px;
+      color: #aaa;
+      margin-left: auto;
+    }
+    .msg-card .body {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .msg-card .body img {
+      max-width: 200px;
+      border-radius: 8px;
+      margin-top: 6px;
+      display: block;
+    }
+    .msg-card .body video,
+    .msg-card .body audio {
+      margin-top: 6px;
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    .msg-card .body a.file-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      color: #128c7e;
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .msg-card .body a.file-link:hover { text-decoration: underline; }
+
+    .star-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      color: #f4b400;
+      font-size: 14px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #888;
+      font-size: 14px;
+    }
+    .empty-state i {
+      font-size: 36px;
+      color: #ccc;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .divider {
+      height: 1px;
+      background: #ddd;
+      margin: 8px 0 4px;
+    }
+
+    @media (max-width: 480px) {
+      .content { padding: 8px 8px 32px; }
+      .msg-card { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
+    <div>
+      <h1>Starred Messages</h1>
     </div>
-  {% empty %}
-    <p class="text-gray-600">No direct starred messages found.</p>
-  {% endfor %}
+  </div>
 
-  <hr class="my-6">
+  <div class="content">
 
-  <h3 class="font-semibold mb-2 text-blue-600">Group Messages</h3>
-  {% for msg in group_starred %}
-    <div class="border border-gray-300 rounded-lg p-3 mb-3 bg-white shadow">
-      <div><strong>From:</strong> {{ msg.sender.username }}</div>
-      <div><strong>Group:</strong> {{ msg.group.name }}</div>
-      
-      {% if msg.message_type == 'text' %}
-        <p>{{ msg.message }}</p>
-      {% elif msg.message_type == 'image' %}
-        {% if msg.file %} {# ADD THIS CHECK #}
-          <img src="{{ msg.file.url }}" alt="image" class="w-32 rounded mt-2">
+    <!-- DIRECT MESSAGES -->
+    <div class="section-label"><i class="fas fa-star" style="margin-right:5px;"></i>Direct Messages</div>
+
+    {% for msg in direct_starred %}
+    <div class="msg-card">
+      <i class="fas fa-star star-badge"></i>
+      <div class="meta">
+        <img src="{% if msg.sender.profile_picture %}{{ msg.sender.profile_picture.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
+             alt="{{ msg.sender.username }}"
+             onerror="this.src='{% static 'default-profile.png' %}'">
+        <span class="name">{{ msg.sender.username }}</span>
+        <span style="font-size:11px;color:#aaa;">→ {{ msg.receiver.username }}</span>
+        <span class="time">{{ msg.timestamp|date:"d M, H:i" }}</span>
+      </div>
+      <div class="body">
+        {% if msg.message_type == 'text' %}
+          {{ msg.message }}
+        {% elif msg.message_type == 'image' and msg.file %}
+          <img src="{{ msg.file.url }}" alt="image">
+          {% if msg.message %}<p style="margin-top:4px;">{{ msg.message }}</p>{% endif %}
+        {% elif msg.message_type == 'video' and msg.file %}
+          <video src="{{ msg.file.url }}" controls></video>
+        {% elif msg.message_type == 'audio' and msg.file %}
+          <audio src="{{ msg.file.url }}" controls></audio>
+        {% elif msg.file %}
+          <a href="{{ msg.file.url }}" download class="file-link">
+            <i class="fas fa-file-download"></i> {{ msg.file.name|slice:"20:" }}
+          </a>
         {% else %}
-          <p class="text-red-500">Image file missing.</p> {# Optional: Display a message #}
+          <span style="color:#aaa;font-style:italic;">File unavailable</span>
         {% endif %}
-      {% elif msg.message_type == 'video' %}
-        {% if msg.file %} {# ADD THIS CHECK #}
-          <video src="{{ msg.file.url }}" controls class="w-64 mt-2"></video>
-        {% else %}
-          <p class="text-red-500">Video file missing.</p> {# Optional: Display a message #}
-        {% endif %}
-      {% elif msg.message_type == 'audio' %}
-        {% if msg.file %} {# ADD THIS CHECK #}
-          <audio src="{{ msg.file.url }}" controls class="mt-2"></audio>
-        {% else %}
-          <p class="text-red-500">Audio file missing.</p> {# Optional: Display a message #}
-        {% endif %}
-      {% else %} {# For 'file' or other types not explicitly handled #}
-        {% if msg.file %} {# ADD THIS CHECK #}
-          <a href="{{ msg.file.url }}" download class="text-blue-500 underline mt-2">Download File</a>
-        {% else %}
-          <p class="text-red-500">File missing.</p> {# Optional: Display a message #}
-        {% endif %}
-      {% endif %}
-      
-      <small class="text-gray-500">{{ msg.timestamp|date:"d M Y, H:i" }}</small>
+      </div>
     </div>
-  {% empty %}
-    <p class="text-gray-600">No group starred messages found.</p>
-  {% endfor %}
-</div>
-<script src="{% static 'js/star_logic.js' %}"></script>
+    {% empty %}
+    <div class="empty-state">
+      <i class="fas fa-star"></i>
+      No starred direct messages yet.
+    </div>
+    {% endfor %}
 
-{% endblock %}
+    <div class="divider"></div>
+
+    <!-- GROUP MESSAGES -->
+    <div class="section-label"><i class="fas fa-users" style="margin-right:5px;"></i>Group Messages</div>
+
+    {% for msg in group_starred %}
+    <div class="msg-card">
+      <i class="fas fa-star star-badge"></i>
+      <div class="meta">
+        <img src="{% if msg.sender.profile_picture %}{{ msg.sender.profile_picture.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
+             alt="{{ msg.sender.username }}"
+             onerror="this.src='{% static 'default-profile.png' %}'">
+        <span class="name">{{ msg.sender.username }}</span>
+        <span class="group-tag"><i class="fas fa-users" style="font-size:10px;"></i> {{ msg.group.name }}</span>
+        <span class="time">{{ msg.timestamp|date:"d M, H:i" }}</span>
+      </div>
+      <div class="body">
+        {% if msg.message_type == 'text' %}
+          {{ msg.message }}
+        {% elif msg.message_type == 'image' and msg.file %}
+          <img src="{{ msg.file.url }}" alt="image">
+          {% if msg.message %}<p style="margin-top:4px;">{{ msg.message }}</p>{% endif %}
+        {% elif msg.message_type == 'video' and msg.file %}
+          <video src="{{ msg.file.url }}" controls></video>
+        {% elif msg.message_type == 'audio' and msg.file %}
+          <audio src="{{ msg.file.url }}" controls></audio>
+        {% elif msg.file %}
+          <a href="{{ msg.file.url }}" download class="file-link">
+            <i class="fas fa-file-download"></i> {{ msg.file.name|slice:"20:" }}
+          </a>
+        {% else %}
+          <span style="color:#aaa;font-style:italic;">File unavailable</span>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <i class="fas fa-users"></i>
+      No starred group messages yet.
+    </div>
+    {% endfor %}
+
+  </div>
+
+</body>
+</html>
