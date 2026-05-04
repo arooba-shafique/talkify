@@ -74,7 +74,7 @@
             border: 1px solid #ccc;
             border-radius: 8px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-            z-index: 9999;
+            z-index: 99999;
             width: 180px;
             padding: 8px;
             display: none;
@@ -285,6 +285,7 @@
                 border-right: none;
                 background-color: #f0f2f5;
                 z-index: 300;
+                overflow: visible !important;
             }
 
             .icon-bar .top-icons,
@@ -304,6 +305,7 @@
                 justify-content: center;
                 height: 56px;
                 cursor: pointer;
+                position: relative;
             }
 
             .icon-bar i { font-size: 20px; margin: 0; }
@@ -315,6 +317,7 @@
 
             /* Dropdowns pop UP from bottom bar */
             .settings-dropdown {
+                position: fixed !important;
                 bottom: 60px !important;
                 left: 8px !important;
                 top: auto !important;
@@ -322,6 +325,7 @@
             }
 
             .status-dropdown {
+                position: fixed !important;
                 bottom: 60px !important;
                 left: 50% !important;
                 transform: translateX(-50%) !important;
@@ -329,6 +333,7 @@
             }
 
             .menu-dropdown {
+                position: fixed !important;
                 bottom: 60px !important;
                 right: 8px !important;
                 top: auto !important;
