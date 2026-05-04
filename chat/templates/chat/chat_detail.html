@@ -19,9 +19,6 @@
             background: #e5ddd5;
         }
 
-        /* ════════════════════════════
-           APP SHELL
-        ════════════════════════════ */
         .app-shell {
             display: flex;
             height: 100vh;
@@ -30,9 +27,7 @@
             position: relative;
         }
 
-        /* ════════════════════════════
-           ICON BAR
-        ════════════════════════════ */
+        /* ── ICON BAR ── */
         .icon-bar {
             width: 60px;
             background: #f0f2f5;
@@ -67,9 +62,7 @@
             border: 2px solid #ccc;
         }
 
-        /* ════════════════════════════
-           SIDEBAR
-        ════════════════════════════ */
+        /* ── SIDEBAR ── */
         .sidebar {
             width: 320px;
             min-width: 260px;
@@ -168,9 +161,7 @@
             font-size: 14px;
         }
 
-        /* ════════════════════════════
-           CHAT SECTION
-        ════════════════════════════ */
+        /* ── CHAT SECTION ── */
         .chat-section {
             flex: 1;
             display: flex;
@@ -180,7 +171,6 @@
             min-width: 0;
         }
 
-        /* ── HEADER ── */
         .chat-header {
             display: flex;
             align-items: center;
@@ -241,7 +231,6 @@
         }
         .chat-header-actions i:hover { color: #128c7e; }
 
-        /* ── MESSAGES ── */
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -274,46 +263,24 @@
             align-self: flex-start;
             border-bottom-left-radius: 2px;
         }
-        .sender-name {
-            font-size: 12px;
-            font-weight: 600;
-            color: #128c7e;
-            margin-bottom: 2px;
-        }
+        .sender-name { font-size: 12px; font-weight: 600; color: #128c7e; margin-bottom: 2px; }
         .forwarded-label {
-            font-size: 11px;
-            color: #aaa;
-            margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-style: italic;
+            font-size: 11px; color: #aaa; margin-bottom: 3px;
+            display: flex; align-items: center; gap: 4px; font-style: italic;
         }
         .deleted-message {
-            font-style: italic;
-            color: #999;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            font-style: italic; color: #999; font-size: 13px;
+            display: flex; align-items: center; gap: 5px;
         }
         .message-text { font-size: 14px; }
         .chat-image-clickable {
-            max-width: 220px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: block;
-            margin-top: 4px;
+            max-width: 220px; border-radius: 6px; cursor: pointer;
+            display: block; margin-top: 4px;
         }
         .message-time {
-            font-size: 10px;
-            color: #999;
-            float: right;
-            margin-left: 8px;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-size: 10px; color: #999;
+            float: right; margin-left: 8px; margin-top: 4px;
+            display: flex; align-items: center; gap: 4px;
         }
         .tick-icons { display: flex; align-items: center; }
         .tick-icons .blue { color: #34b7f1; }
@@ -321,62 +288,36 @@
         .starred-icon { color: #f4b400; }
         .unstarred-icon { color: #ddd; }
         .reaction-display {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 3px;
-            margin-top: 4px;
-            clear: both;
+            display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; clear: both;
         }
         .reaction-display span {
-            background: #f0f0f0;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 1px 6px;
-            font-size: 13px;
-            cursor: pointer;
+            background: #f0f0f0; border: 1px solid #ddd;
+            border-radius: 12px; padding: 1px 6px; font-size: 13px; cursor: pointer;
         }
         .delete-icon {
-            cursor: pointer;
-            font-size: 11px;
-            color: #ccc;
-            margin-left: 2px;
-            transition: color .2s;
+            cursor: pointer; font-size: 11px; color: #ccc;
+            margin-left: 2px; transition: color .2s;
         }
         .delete-icon:hover { color: #e74c3c; }
         .forward-message-btn {
-            cursor: pointer;
-            font-size: 11px;
-            color: #bbb;
-            margin-left: 2px;
+            cursor: pointer; font-size: 11px; color: #bbb; margin-left: 2px;
         }
         .forward-message-btn:hover { color: #128c7e; }
         .emoji-reaction-wrapper { position: relative; display: inline-flex; align-items: center; }
         .reaction-toggle { cursor: pointer; font-size: 13px; color: #bbb; }
         .reaction-toggle:hover { color: #555; }
         .reaction-menu {
-            position: absolute;
-            bottom: 22px;
-            right: 0;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 6px 8px;
-            z-index: 200;
-            display: none;
-            white-space: nowrap;
+            position: absolute; bottom: 22px; right: 0;
+            background: #fff; border: 1px solid #ddd; border-radius: 10px;
+            padding: 6px 8px; z-index: 200; display: none; white-space: nowrap;
             box-shadow: 0 2px 10px rgba(0,0,0,.13);
         }
         .reaction-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 2px 3px;
-            transition: transform .15s;
+            background: none; border: none; font-size: 20px;
+            cursor: pointer; padding: 2px 3px; transition: transform .15s;
         }
         .reaction-btn:hover { transform: scale(1.3); }
 
-        /* ── FOOTER / TYPING BAR ── */
         .chat-footer {
             padding: 6px 10px;
             background: #f0f2f5;
@@ -384,64 +325,32 @@
             flex-shrink: 0;
             z-index: 10;
         }
-        .chat-footer form {
-            display: flex;
-            align-items: flex-end;
-            gap: 6px;
-        }
+        .chat-footer form { display: flex; align-items: flex-end; gap: 6px; }
         .footer-icon-btn {
-            background: none;
-            border: none;
-            padding: 0 6px;
-            cursor: pointer;
-            color: #555;
-            font-size: 20px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 42px;
-            transition: color .2s;
+            background: none; border: none; padding: 0 6px;
+            cursor: pointer; color: #555; font-size: 20px;
+            flex-shrink: 0; display: flex; align-items: center;
+            justify-content: center; height: 42px; transition: color .2s;
         }
         .footer-icon-btn:hover { color: #128c7e; }
         .footer-icon-btn label { cursor: pointer; margin: 0; line-height: 0; display: flex; align-items: center; }
         #messageInput {
-            flex: 1;
-            border: none;
-            border-radius: 22px;
-            padding: 10px 16px;
-            background: #fff;
-            font-size: 14px;
-            outline: none;
-            resize: none;
-            max-height: 130px;
-            overflow-y: auto;
-            line-height: 1.45;
-            font-family: inherit;
-            min-height: 42px;
-            -webkit-overflow-scrolling: touch;
+            flex: 1; border: none; border-radius: 22px;
+            padding: 10px 16px; background: #fff; font-size: 14px;
+            outline: none; resize: none; max-height: 130px;
+            overflow-y: auto; line-height: 1.45; font-family: inherit;
+            min-height: 42px; -webkit-overflow-scrolling: touch;
         }
         .send-btn {
-            background: #128c7e;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 42px;
-            height: 42px;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: background .2s;
+            background: #128c7e; color: #fff; border: none;
+            border-radius: 50%; width: 42px; height: 42px;
+            font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: background .2s;
         }
         .send-btn:hover { background: #0e7063; }
-        .send-btn:active { background: #0b5e55; }
 
-        /* ════════════════════════════
-           DROPDOWNS
-        ════════════════════════════ */
+        /* ── DROPDOWNS ── */
         .settings-dropdown,
         .status-dropdown,
         .menu-dropdown {
@@ -462,178 +371,91 @@
         .settings-dropdown a,
         .status-dropdown a,
         .menu-dropdown a {
-            display: block;
-            padding: 8px 12px;
-            text-decoration: none;
-            color: #333;
-            font-size: 14px;
-            border-radius: 5px;
+            display: block; padding: 8px 12px; text-decoration: none;
+            color: #333; font-size: 14px; border-radius: 5px;
         }
         .settings-dropdown a:hover,
         .status-dropdown a:hover,
         .menu-dropdown a:hover { background: #f1f1f1; }
 
-        /* ════════════════════════════
-           MODALS
-        ════════════════════════════ */
+        /* ── MODALS ── */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.55);
-            z-index: 9000;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,.55); z-index: 9000;
+            align-items: center; justify-content: center; padding: 16px;
         }
         .modal-overlay.active { display: flex; }
         .modal-box {
-            background: #fff;
-            padding: 22px;
-            border-radius: 12px;
-            min-width: 260px;
-            max-width: 92vw;
+            background: #fff; padding: 22px; border-radius: 12px;
+            min-width: 260px; max-width: 92vw;
         }
         .modal-box h4 { font-size: 16px; margin-bottom: 16px; color: #222; }
         .modal-box button {
-            padding: 9px 18px;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-right: 8px;
-            margin-bottom: 4px;
+            padding: 9px 18px; border: none; border-radius: 7px;
+            cursor: pointer; font-size: 14px; margin-right: 8px; margin-bottom: 4px;
         }
-        #deleteForMeBtn      { background: #f1f1f1; color: #333; }
-        #deleteForEveryoneBtn{ background: #e74c3c; color: #fff; display: none; }
-        #cancelDeleteBtn     { background: #eee; color: #333; }
+        #deleteForMeBtn       { background: #f1f1f1; color: #333; }
+        #deleteForEveryoneBtn { background: #e74c3c; color: #fff; display: none; }
+        #cancelDeleteBtn      { background: #eee; color: #333; }
 
         .forward-modal-box {
-            background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            width: 320px;
-            max-width: 94vw;
-            max-height: 82vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            background: #fff; padding: 20px; border-radius: 12px;
+            width: 320px; max-width: 94vw; max-height: 82vh;
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
         }
         .forward-modal-box h4 { font-size: 16px; margin-bottom: 10px; }
         .forward-modal-box h5 {
-            font-size: 11px;
-            color: #888;
-            margin: 16px 0 6px;
-            text-transform: uppercase;
-            letter-spacing: .6px;
+            font-size: 11px; color: #888; margin: 16px 0 6px;
+            text-transform: uppercase; letter-spacing: .6px;
         }
         .forward-modal-box ul { list-style: none; padding: 0; }
         .forward-modal-box ul li { margin-bottom: 4px; }
         .forward-modal-box ul li label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 5px 4px;
-            border-radius: 6px;
+            display: flex; align-items: center; gap: 10px;
+            cursor: pointer; font-size: 14px; padding: 5px 4px; border-radius: 6px;
         }
         .forward-modal-box ul li label:hover { background: #f5f5f5; }
         .forward-modal-box ul li label img {
-            width: 32px; height: 32px;
-            border-radius: 50%; object-fit: cover; flex-shrink: 0;
+            width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
         }
         .close-button {
-            float: right;
-            cursor: pointer;
-            font-size: 24px;
-            line-height: 1;
-            color: #888;
+            float: right; cursor: pointer; font-size: 24px; line-height: 1; color: #888;
         }
         .close-button:hover { color: #333; }
         #confirmForwardBtn {
-            display: block;
-            width: 100%;
-            margin-top: 16px;
-            padding: 11px;
-            background: #25D366;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
+            display: block; width: 100%; margin-top: 16px; padding: 11px;
+            background: #25D366; color: #fff; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 14px; font-weight: 600;
         }
         .forward-cancel-btn {
-            display: block;
-            width: 100%;
-            margin-top: 8px;
-            padding: 10px;
-            background: #eee;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            color: #333;
+            display: block; width: 100%; margin-top: 8px; padding: 10px;
+            background: #eee; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 14px; color: #333;
         }
 
-
-        /* ════════════════════════════
-           MOBILE  ≤ 768px
-        ════════════════════════════ */
+        /* ════════════════════════════════
+           MOBILE ≤ 768px
+        ════════════════════════════════ */
         @media (max-width: 768px) {
 
-            /* Stack vertically */
             .app-shell { flex-direction: column; }
 
-            /* ── Bottom tab bar ── */
-            .icon-bar {
-                position: fixed;
-                bottom: 0; left: 0;
-                width: 100%;
-                height: 54px;
-                flex-direction: row;
-                justify-content: space-around;
-                align-items: center;
-                padding: 0;
-                border-top: 1px solid #ddd;
-                border-right: none;
-                z-index: 200;
-            }
-            .icon-bar .top-icons,
-            .icon-bar .bottom-icons {
-                flex-direction: row;
-                gap: 0;
-                flex: 1;
-                justify-content: space-around;
-                align-items: center;
-                height: 100%;
-            }
-            .icon-bar .top-icons > *,
-            .icon-bar .bottom-icons > * {
-                flex: 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                height: 54px;
-                cursor: pointer;
-            }
-            .icon-bar i { font-size: 22px; }
-            .icon-bar .bottom-icons a img { width: 30px; height: 30px; }
+            /* HIDE icon bar completely on mobile */
+            .icon-bar { display: none; }
 
-            /* ── Sidebar: full screen ── */
+            /* Sidebar: full screen */
             .sidebar {
                 width: 100%;
                 max-width: 100%;
-                height: calc(100vh - 54px);  /* minus bottom tab */
+                height: 100vh;
                 border-right: none;
             }
 
-            /* ── Chat section: fixed, slides in from right ── */
+            /* Chat section: slides in from right, full screen */
             .chat-section {
                 position: fixed;
-                top: 0; left: 0; right: 0;
-                bottom: 54px;                /* above tab bar */
-                height: calc(100vh - 54px);
+                top: 0; left: 0; right: 0; bottom: 0;
+                height: 100vh;
                 z-index: 150;
                 transform: translateX(100%);
                 transition: transform .25s cubic-bezier(.4,0,.2,1);
@@ -642,7 +464,6 @@
                 background: #e5ddd5;
             }
 
-            /* ── chat-open: slide in chat, hide sidebar ── */
             .app-shell.chat-open .chat-section {
                 transform: translateX(0);
             }
@@ -650,18 +471,17 @@
                 display: none;
             }
 
-            /* ── back button visible ── */
+            /* Show back button */
             .back-btn { display: flex; }
 
-            /* ── Wider bubbles on mobile ── */
+            /* Wider bubbles */
             .chat-bubble { max-width: 86%; }
 
-            /* ── Repositioned dropdowns ── */
-            .settings-dropdown { bottom: 58px; left: 8px; top: auto; right: auto; }
-            .status-dropdown   { bottom: 58px; left: 8px; top: auto; }
-            .menu-dropdown     { bottom: 58px; right: 8px; top: auto; left: auto; }
+            /* Dropdown positions on mobile */
+            .settings-dropdown { top: 56px; left: 8px; bottom: auto; }
+            .status-dropdown   { top: 56px; left: 8px; bottom: auto; }
+            .menu-dropdown     { top: 28px; right: 8px; bottom: auto; left: auto; }
 
-            /* ── Prevent iOS font zoom ── */
             #messageInput { font-size: 16px; }
             .sidebar-header input { font-size: 16px; }
         }
@@ -675,14 +495,12 @@
 
 <div class="app-shell {% if receiver or group %}chat-open{% endif %}" id="appShell">
 
-    <!-- ══════════════ ICON BAR ══════════════ -->
+    <!-- ── ICON BAR (desktop only) ── -->
     <div class="icon-bar">
         <div class="top-icons">
-
             <div title="Chats" style="position:relative;">
                 <i class="fas fa-comment-dots"></i>
             </div>
-
             <div style="position:relative;" title="Status">
                 <i class="fas fa-circle-notch" id="statusIcon" style="cursor:pointer;"></i>
                 {% if has_unseen_status %}
@@ -695,12 +513,10 @@
                     <a href="{% url 'status_upload' %}">➕ Add Status</a>
                 </div>
             </div>
-
             <a href="{% url 'create_group' %}" title="New Group">
                 <i class="fas fa-users"></i>
             </a>
         </div>
-
         <div class="bottom-icons">
             <div style="position:relative;" title="Settings">
                 <i class="fas fa-cog" id="settingsIcon" style="cursor:pointer;"></i>
@@ -710,7 +526,6 @@
                     <a href="{% url 'logout' %}">Logout</a>
                 </div>
             </div>
-
             <a href="{% url 'profile_sidebar' %}" title="My Profile">
                 {% if request.user.profile_picture %}
                     <img src="{{ request.user.profile_picture.url }}" alt="Me"
@@ -722,8 +537,7 @@
         </div>
     </div>
 
-
-    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <!-- ── SIDEBAR ── -->
     <div class="sidebar">
         <div class="sidebar-header">
             <input type="text" id="chatSearch" placeholder="Search chats...">
@@ -817,11 +631,9 @@
         </div>
     </div>
 
-
-    <!-- ══════════════ CHAT SECTION ══════════════ -->
+    <!-- ── CHAT SECTION ── -->
     <div class="chat-section" id="chatSection">
 
-        <!-- HEADER -->
         <div class="chat-header">
             <button class="back-btn" id="backBtn" type="button" aria-label="Back">
                 <i class="fas fa-arrow-left"></i>
@@ -843,6 +655,7 @@
                      onerror="this.src='{% static 'default-profile.png' %}'">
                 <div class="chat-header-info">
                     <div class="chat-header-name">{{ receiver.username }}</div>
+                    <!-- NOTE: "online" is STATIC — update via WebSocket for real-time status -->
                     <div class="chat-header-status" id="onlineStatus">online</div>
                 </div>
             </a>
@@ -856,9 +669,9 @@
             {% endif %}
 
             <div class="chat-header-actions">
-                <i class="fas fa-search" title="Search messages" id="headerSearchIcon"></i>
+                <i class="fas fa-search" title="Search" id="headerSearchIcon"></i>
                 <div style="position:relative;">
-                    <i class="fas fa-ellipsis-v" id="chatMenuIcon" title="More options"></i>
+                    <i class="fas fa-ellipsis-v" id="chatMenuIcon" title="More"></i>
                     <div id="chatMenuDropdown" class="menu-dropdown">
                         {% if is_group %}
                             <a href="{% url 'group_profile' group.id %}">Group Info</a>
@@ -871,7 +684,6 @@
             </div>
         </div>
 
-        <!-- MESSAGES -->
         <div class="chat-messages" id="chatBox">
             {% if messages %}
                 {% for msg in messages %}
@@ -891,17 +703,14 @@
                             This message was deleted
                         </span>
                     {% else %}
-
                         {% if msg.is_forwarded %}
                             <div class="forwarded-label">
                                 <i class="fas fa-share-square"></i> Forwarded
                             </div>
                         {% endif %}
-
                         {% if msg.message %}
                             <span class="message-text" id="msg-text-{{ msg.id }}">{{ msg.message }}</span><br>
                         {% endif %}
-
                         {% if msg.file %}
                             {% if msg.message_type == "image" %}
                                 <img src="{{ msg.file.url }}" alt="Image" class="chat-image-clickable">
@@ -922,47 +731,33 @@
                                 </a>
                             {% endif %}
                         {% endif %}
-
                     {% endif %}
 
-                    <!-- Reactions display -->
                     <div class="reaction-display" id="reactions-{{ msg.id }}">
                         {% if not msg.is_deleted and request.user not in msg.deleted_for.all %}
                             {% include "chat/reactions.html" with message=msg is_group=is_group %}
                         {% endif %}
                     </div>
 
-                    <!-- Time + action icons -->
                     <span class="message-time">
                         {{ msg.timestamp|date:"h:i A" }}
-
                         {% if not msg.is_deleted and request.user not in msg.deleted_for.all %}
-
                             {% if msg.id in starred_msg_ids %}
-                                <i class="fas fa-star toggle-star starred-icon"
-                                   data-msg-id="{{ msg.id }}" title="Unstar"></i>
+                                <i class="fas fa-star toggle-star starred-icon" data-msg-id="{{ msg.id }}"></i>
                             {% else %}
-                                <i class="fas fa-star toggle-star unstarred-icon"
-                                   data-msg-id="{{ msg.id }}" title="Star"></i>
+                                <i class="fas fa-star toggle-star unstarred-icon" data-msg-id="{{ msg.id }}"></i>
                             {% endif %}
-
                             {% if msg.sender == request.user %}
                             <span class="tick-icons">
-                                {% if msg.status == 'sent' %}
-                                    <i class="fas fa-check"></i>
-                                {% elif msg.status == 'delivered' %}
-                                    <i class="fas fa-check-double"></i>
-                                {% elif msg.status == 'seen' %}
-                                    <i class="fas fa-check-double blue"></i>
+                                {% if msg.status == 'sent' %}<i class="fas fa-check"></i>
+                                {% elif msg.status == 'delivered' %}<i class="fas fa-check-double"></i>
+                                {% elif msg.status == 'seen' %}<i class="fas fa-check-double blue"></i>
                                 {% endif %}
                             </span>
                             {% endif %}
-
                             {% if msg.sender != request.user %}
                             <span class="emoji-reaction-wrapper">
-                                <i class="fas fa-smile reaction-toggle"
-                                   data-msg-id="{{ msg.id }}"
-                                   title="React"></i>
+                                <i class="fas fa-smile reaction-toggle" data-msg-id="{{ msg.id }}"></i>
                                 <div class="reaction-menu" id="reaction-menu-{{ msg.id }}">
                                     {% for emoji in emoji_reactions %}
                                         <button class="reaction-btn"
@@ -976,24 +771,20 @@
                                 </div>
                             </span>
                             {% endif %}
-
                             <i class="fas fa-share forward-message-btn"
                                data-original-message-id="{{ msg.id }}"
-                               data-original-message-type="{% if is_group %}group{% else %}chat{% endif %}"
-                               title="Forward"></i>
-
+                               data-original-message-type="{% if is_group %}group{% else %}chat{% endif %}"></i>
                             <i class="fa fa-trash delete-icon"
                                data-msg-id="{{ msg.id }}"
                                data-is-sender="{% if msg.sender.id == request.user.id %}true{% else %}false{% endif %}"
-                               data-is-group="{% if is_group %}true{% else %}false{% endif %}"
-                               title="Delete"></i>
+                               data-is-group="{% if is_group %}true{% else %}false{% endif %}"></i>
                         {% endif %}
                     </span>
                 </div>
                 {% endfor %}
             {% else %}
                 <p style="text-align:center;color:#888;font-size:13px;margin-top:40px;">
-                    No messages yet. Say hello! 
+                    No messages yet. Say hello!
                 </p>
             {% endif %}
         </div>
@@ -1015,17 +806,14 @@
                 <h4>Forward Message To:</h4>
                 <input type="hidden" id="forwardOriginalMessageId">
                 <input type="hidden" id="forwardOriginalMessageType">
-
                 <h5>Contacts</h5>
                 <ul id="forwardUserList">
                     {% for user_option in users %}
                         {% if user_option != request.user %}
                         <li>
                             <label>
-                                <input type="checkbox" name="forwardRecipient"
-                                       value="{{ user_option.id }}"
-                                       data-type="user"
-                                       class="forward-to-user-checkbox">
+                                <input type="checkbox" name="forwardRecipient" value="{{ user_option.id }}"
+                                       data-type="user" class="forward-to-user-checkbox">
                                 <img src="{% if user_option.profile_picture %}{{ user_option.profile_picture.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
                                      alt="{{ user_option.username }}"
                                      onerror="this.src='{% static 'default-profile.png' %}'">
@@ -1035,16 +823,13 @@
                         {% endif %}
                     {% endfor %}
                 </ul>
-
                 <h5>Groups</h5>
                 <ul id="forwardGroupList">
                     {% for group_option in groups %}
                     <li>
                         <label>
-                            <input type="checkbox" name="forwardRecipient"
-                                   value="{{ group_option.id }}"
-                                   data-type="group"
-                                   class="forward-to-group-checkbox">
+                            <input type="checkbox" name="forwardRecipient" value="{{ group_option.id }}"
+                                   data-type="group" class="forward-to-group-checkbox">
                             <img src="{% if group_option.icon %}{{ group_option.icon.url }}{% else %}{% static 'default-group.png' %}{% endif %}"
                                  alt="{{ group_option.name }}">
                             {{ group_option.name }}
@@ -1052,36 +837,25 @@
                     </li>
                     {% endfor %}
                 </ul>
-
                 <button id="confirmForwardBtn">Forward Selected</button>
                 <button class="forward-cancel-btn"
-                        onclick="document.getElementById('forwardModal').classList.remove('active')">
-                    Cancel
-                </button>
+                        onclick="document.getElementById('forwardModal').classList.remove('active')">Cancel</button>
             </div>
         </div>
 
-        <!-- TYPING BAR / FOOTER -->
+        <!-- CHAT FOOTER -->
         <div class="chat-footer" id="chatFooter">
             <form method="post" enctype="multipart/form-data" id="messageForm">
                 {% csrf_token %}
-
                 <button type="button" class="footer-icon-btn" aria-label="Attach">
                     <label for="fileInput"><i class="fas fa-paperclip"></i></label>
                 </button>
                 <input type="file" name="file" id="fileInput" style="display:none;"
                        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip">
-
-                <textarea id="messageInput"
-                          name="message"
-                          rows="1"
+                <textarea id="messageInput" name="message" rows="1"
                           placeholder="Type a message..."
-                          autocomplete="off"
-                          autocorrect="on"
-                          spellcheck="true"></textarea>
-
+                          autocomplete="off" autocorrect="on" spellcheck="true"></textarea>
                 <input type="hidden" name="message_type" id="messageTypeInput" value="text">
-
                 <button type="submit" class="send-btn" id="messageSendButton" aria-label="Send">
                     <i class="fas fa-paper-plane" style="font-size:15px;margin-left:2px;"></i>
                 </button>
@@ -1092,8 +866,6 @@
 
 </div><!-- /app-shell -->
 
-
-<!-- ════════════ GLOBAL DATA ════════════ -->
 <script id="global-data" type="application/json">
 {
     "currentUserId": {{ request.user.id | safe }},
@@ -1126,9 +898,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const appShell = document.getElementById("appShell");
 
-    /* ─────────────────────────────────
-       DROPDOWN HELPER
-    ───────────────────────────────── */
+    /* ── DROPDOWNS ── */
+    function closeAllDropdowns() {
+        document.querySelectorAll(".menu-dropdown, .settings-dropdown, .status-dropdown")
+                .forEach(m => m.style.display = "none");
+    }
     function setupDropdown(triggerId, menuId) {
         const trigger = document.getElementById(triggerId);
         const menu    = document.getElementById(menuId);
@@ -1136,25 +910,20 @@ document.addEventListener("DOMContentLoaded", function () {
         trigger.addEventListener("click", function (e) {
             e.stopPropagation();
             const isOpen = menu.style.display === "block";
-            // Close all open dropdowns first
-            document.querySelectorAll(".menu-dropdown, .settings-dropdown, .status-dropdown")
-                    .forEach(m => m.style.display = "none");
+            closeAllDropdowns();
             menu.style.display = isOpen ? "none" : "block";
         });
     }
-    document.addEventListener("click", function () {
-        document.querySelectorAll(".menu-dropdown, .settings-dropdown, .status-dropdown")
-                .forEach(m => m.style.display = "none");
-    });
+    document.addEventListener("click", closeAllDropdowns);
+    document.querySelectorAll(".menu-dropdown, .settings-dropdown, .status-dropdown")
+            .forEach(m => m.addEventListener("click", e => e.stopPropagation()));
 
     setupDropdown("settingsIcon",  "settingsMenu");
     setupDropdown("statusIcon",    "statusMenu");
     setupDropdown("menuIcon",      "menuDropdown");
     setupDropdown("chatMenuIcon",  "chatMenuDropdown");
 
-    /* ─────────────────────────────────
-       SIDEBAR SEARCH
-    ───────────────────────────────── */
+    /* ── SIDEBAR SEARCH ── */
     const chatSearch = document.getElementById("chatSearch");
     if (chatSearch) {
         chatSearch.addEventListener("input", function () {
@@ -1166,37 +935,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* ─────────────────────────────────
-       SCROLL TO BOTTOM
-    ───────────────────────────────── */
+    /* ── SCROLL TO BOTTOM ── */
     const chatBox = document.getElementById("chatBox");
-    function scrollToBottom() {
-        if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    function scrollToBottom() { if (chatBox) chatBox.scrollTop = chatBox.scrollHeight; }
     scrollToBottom();
 
-    /* ─────────────────────────────────
-       AUTO-GROW TEXTAREA
-    ───────────────────────────────── */
+    /* ── AUTO-GROW TEXTAREA ── */
     const textarea = document.getElementById("messageInput");
     if (textarea) {
         textarea.addEventListener("input", function () {
             this.style.height = "auto";
             this.style.height = Math.min(this.scrollHeight, 130) + "px";
         });
-        // Enter to send, Shift+Enter for new line
         textarea.addEventListener("keydown", function (e) {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                const form = document.getElementById("messageForm");
-                if (form) form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+                document.getElementById("messageForm")
+                        ?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
             }
         });
     }
 
-    /* ─────────────────────────────────
-       FILE INPUT → AUTO-DETECT TYPE
-    ───────────────────────────────── */
+    /* ── FILE TYPE DETECTION ── */
     const fileInput        = document.getElementById("fileInput");
     const messageTypeInput = document.getElementById("messageTypeInput");
     if (fileInput && messageTypeInput) {
@@ -1210,9 +970,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* ─────────────────────────────────
-       MOBILE — BACK BUTTON
-    ───────────────────────────────── */
+    /* ── MOBILE BACK BUTTON ── */
     const backBtn = document.getElementById("backBtn");
     if (backBtn) {
         backBtn.addEventListener("click", function () {
@@ -1220,9 +978,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* ─────────────────────────────────
-       MOBILE — OPEN CHAT ON ITEM CLICK
-    ───────────────────────────────── */
+    /* ── MOBILE: open chat on sidebar item click ── */
     document.querySelectorAll("#userList .chat-item").forEach(function (item) {
         item.addEventListener("click", function () {
             if (window.innerWidth <= 768) {
@@ -1231,33 +987,24 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    /* ─────────────────────────────────
-       DELETE MODAL
-    ───────────────────────────────── */
+    /* ── DELETE MODAL ── */
     const deleteModal     = document.getElementById("deleteModal");
     const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
-    function closeDeleteModal() { if (deleteModal) deleteModal.classList.remove("active"); }
-    if (cancelDeleteBtn) cancelDeleteBtn.addEventListener("click", closeDeleteModal);
-    if (deleteModal)     deleteModal.addEventListener("click", e => { if (e.target === deleteModal) closeDeleteModal(); });
+    if (cancelDeleteBtn) cancelDeleteBtn.addEventListener("click", () => deleteModal?.classList.remove("active"));
+    if (deleteModal)     deleteModal.addEventListener("click", e => { if (e.target === deleteModal) deleteModal.classList.remove("active"); });
 
-    /* ─────────────────────────────────
-       FORWARD MODAL
-    ───────────────────────────────── */
+    /* ── FORWARD MODAL ── */
     const forwardModal    = document.getElementById("forwardModal");
     const closeForwardBtn = document.getElementById("closeForwardModal");
-    function closeFwdModal() { if (forwardModal) forwardModal.classList.remove("active"); }
-    if (closeForwardBtn) closeForwardBtn.addEventListener("click", closeFwdModal);
-    if (forwardModal)    forwardModal.addEventListener("click", e => { if (e.target === forwardModal) closeFwdModal(); });
+    if (closeForwardBtn) closeForwardBtn.addEventListener("click", () => forwardModal?.classList.remove("active"));
+    if (forwardModal)    forwardModal.addEventListener("click", e => { if (e.target === forwardModal) forwardModal.classList.remove("active"); });
 
-    /* ─────────────────────────────────
-       REACTION MENUS
-    ───────────────────────────────── */
+    /* ── REACTION MENUS ── */
     document.addEventListener("click", function (e) {
         const toggle = e.target.closest(".reaction-toggle");
         if (toggle) {
             e.stopPropagation();
-            const msgId = toggle.dataset.msgId;
-            const menu  = document.getElementById("reaction-menu-" + msgId);
+            const menu = document.getElementById("reaction-menu-" + toggle.dataset.msgId);
             if (!menu) return;
             const isOpen = menu.style.display === "block";
             document.querySelectorAll(".reaction-menu").forEach(m => m.style.display = "none");
@@ -1269,26 +1016,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    /* ─────────────────────────────────
-       iOS VIRTUAL KEYBOARD — keep footer visible
-    ───────────────────────────────── */
+    /* ── iOS KEYBOARD HANDLING ── */
     if (window.visualViewport) {
         window.visualViewport.addEventListener("resize", function () {
+            if (window.innerWidth > 768) return;
             const chatSection = document.getElementById("chatSection");
             if (!chatSection) return;
-            if (window.innerWidth <= 768) {
-                const tabBarH = 54;
-                const kbH = window.innerHeight - window.visualViewport.height;
-                if (kbH > 50) {
-                    // keyboard open: push chat section up
-                    chatSection.style.bottom = (tabBarH + kbH) + "px";
-                    chatSection.style.height  = (window.innerHeight - tabBarH - kbH) + "px";
-                } else {
-                    chatSection.style.bottom = tabBarH + "px";
-                    chatSection.style.height  = "calc(100vh - " + tabBarH + "px)";
-                }
-                scrollToBottom();
+            const kbH = window.innerHeight - window.visualViewport.height;
+            if (kbH > 50) {
+                chatSection.style.height = (window.innerHeight - kbH) + "px";
+            } else {
+                chatSection.style.height = "100vh";
             }
+            scrollToBottom();
         });
     }
 
