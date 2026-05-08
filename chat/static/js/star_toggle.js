@@ -10,7 +10,7 @@ document.addEventListener("click", function (event) {
 
     const url = isGroup ? globalData.toggleStarGroupUrl : globalData.toggleStarUrl;
     if (!url) {
-        console.error("Star URL not found in globalData");
+        console.error("Star URL not found in globalData. isGroup:", isGroup, "globalData:", globalData);
         return;
     }
 
@@ -25,7 +25,10 @@ document.addEventListener("click", function (event) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.is_starred) {
+        // Handle both {is_starred: true/false} and {status: "starred"/"unstarred"}
+        const isStarred = (data.is_starred === true) || (data.status === "starred");
+
+        if (isStarred) {
             starIcon.classList.remove("unstarred-icon");
             starIcon.classList.add("starred-icon");
         } else {
