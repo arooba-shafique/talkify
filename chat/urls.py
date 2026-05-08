@@ -47,7 +47,7 @@ urlpatterns = [
     path('chat/group/<int:group_id>/message/<int:message_id>/delete/', views.delete_group_message, name='delete_group_message'),
     path('group/<int:group_id>/message/<int:message_id>/react/', views.group_message_react, name='group_message_react'),
     path('toggle-star-group/', views.toggle_starred_group_message, name='toggle_starred_group_message'),
-    path("star-message/", views.star_message, name="star_message"),
+    # path("star-message/", views.star_message, name="star_message"),
     path("star-group-message/", views.star_group_message, name="star_group_message"),
     path('group/<int:group_id>/edit/', views.edit_group, name='edit_group'),
 
