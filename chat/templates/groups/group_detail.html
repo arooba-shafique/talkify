@@ -44,13 +44,13 @@
 
     <div class="sidebar">
         <div class="sidebar-header" style="display: flex; justify-content: space-between; align-items: center;">
-<input type="text" placeholder="Search or start new chat" style="flex-grow: 1;" id="chatSearchInput">            <div class="dropdown" style="position: relative; margin-left: 10px;">
+            <input type="text" placeholder="Search or start new chat" style="flex-grow: 1;" id="chatSearchInput">
+            <div class="dropdown" style="position: relative; margin-left: 10px;">
                 <i class="fas fa-ellipsis-v menu-icon" id="menuIcon" title="Menu" style="cursor: pointer;"></i>
                 <div class="menuDropdown" style="display: none; position: absolute; top: 25px; right: 0; background: white; border: 1px solid #ccc; border-radius: 5px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 1000;">
                     <a href="{% url 'profile_sidebar' %}" style="display: block; padding: 5px 10px;">Profile</a>
                     <a href="{% url 'starred_messages' %}" style="display: block; padding: 5px 10px;">Starred Messages</a>
-                                        <a href="{% url 'add_contact' %}">Add Contact</a>
-
+                    <a href="{% url 'add_contact' %}">Add Contact</a>
                     <a href="{% url 'create_group' %}" style="display: block; padding: 5px 10px;">Create Group</a>
                     <a href="{% url 'logout' %}" style="display: block; padding: 5px 10px;">Log out</a>
                 </div>
@@ -61,8 +61,8 @@
             {% for chat_item in combined_chats %}
                 {% if chat_item.type == 'group' %}
                     <a href="{% url 'group_chat_detail' chat_item.participant.id %}"
-   class="user-card {% if is_group and chat_item.participant.id == group.id %}active-chat{% endif %}"
-   data-search-text="{{ chat_item.participant.name|lower }}"> 
+                       class="user-card {% if is_group and chat_item.participant.id == group.id %}active-chat{% endif %}"
+                       data-search-text="{{ chat_item.participant.name|lower }}">
                         {% if chat_item.participant.icon %}
                             <img src="{{ chat_item.participant.icon.url }}" class="user-avatar" alt="{{ chat_item.participant.name }}">
                         {% else %}
@@ -85,10 +85,10 @@
                             </small>
                         </div>
                     </a>
-                {% elif chat_item.type == 'direct' %} 
-                   <a href="{% url 'chat_detail' chat_item.participant.id %}"
-   class="user-card {% if not is_group and receiver and chat_item.participant.id == receiver.id %}active-chat{% endif %}"
-   data-search-text="{{ chat_item.participant.username|lower }}"> 
+                {% elif chat_item.type == 'direct' %}
+                    <a href="{% url 'chat_detail' chat_item.participant.id %}"
+                       class="user-card {% if not is_group and receiver and chat_item.participant.id == receiver.id %}active-chat{% endif %}"
+                       data-search-text="{{ chat_item.participant.username|lower }}">
                         {% if chat_item.participant.profile_picture %}
                             <img src="{{ chat_item.participant.profile_picture.url }}" class="user-avatar" alt="{{ chat_item.participant.username }}">
                         {% else %}
@@ -153,9 +153,7 @@
                             {% endif %}
 
                             {% if msg.message %}
-                                <span class="message-text" id="group-msg-text-{{ msg.id }}">
-                                    {{ msg.message }}
-                                </span>
+                                <span class="message-text" id="group-msg-text-{{ msg.id }}">{{ msg.message }}</span>
                                 <br>
                             {% endif %}
 
@@ -176,69 +174,77 @@
 
                         <span class="message-time">
                             {{ msg.timestamp|date:"h:i A" }}
-                            {% if msg.id in starred_msg_ids %}
-                                <i class="fas fa-star toggle-star starred-icon" data-msg-id="{{ msg.id }}" title="Unstar"></i>
-                            {% else %}
-                                <i class="fas fa-star toggle-star unstarred-icon" data-msg-id="{{ msg.id }}" title="Star"></i>
-                            {% endif %}
 
-                            {% if msg.sender == request.user %}
-                                <span class="tick-icons">
-                                    {% with seen_count=msg.seen_by.count total_members=group.members.count %}
-                                        {% if total_members == 0 or total_members == 1 %}
-                                            {% if seen_count == 1 %}
-                                                <i class="fas fa-check-double blue"></i>
+                            {% if not msg.deleted_for_everyone and request.user not in msg.deleted_for.all %}
+                                {# ── STAR ICON (fixed: data-is-group="true") ── #}
+                                {% if msg.id in starred_msg_ids %}
+                                    <i class="fas fa-star toggle-star starred-icon"
+                                       data-msg-id="{{ msg.id }}"
+                                       data-is-group="true"
+                                       title="Unstar"></i>
+                                {% else %}
+                                    <i class="fas fa-star toggle-star unstarred-icon"
+                                       data-msg-id="{{ msg.id }}"
+                                       data-is-group="true"
+                                       title="Star"></i>
+                                {% endif %}
+
+                                {% if msg.sender == request.user %}
+                                    <span class="tick-icons">
+                                        {% with seen_count=msg.seen_by.count total_members=group.members.count %}
+                                            {% if total_members == 0 or total_members == 1 %}
+                                                {% if seen_count == 1 %}
+                                                    <i class="fas fa-check-double blue"></i>
+                                                {% else %}
+                                                    <i class="fas fa-check"></i>
+                                                {% endif %}
                                             {% else %}
-                                                <i class="fas fa-check"></i>
+                                                {% if seen_count == 1 %}
+                                                    <i class="fas fa-check"></i>
+                                                {% elif seen_count > 1 and seen_count < total_members %}
+                                                    <i class="fas fa-check-double"></i>
+                                                {% elif seen_count == total_members %}
+                                                    <i class="fas fa-check-double blue"></i>
+                                                {% endif %}
                                             {% endif %}
-                                        {% else %}
-                                            {% if seen_count == 1 %}
-                                                <i class="fas fa-check"></i>
-                                            {% elif seen_count > 1 and seen_count < total_members %}
-                                                <i class="fas fa-check-double"></i>
-                                            {% elif seen_count == total_members %}
-                                                <i class="fas fa-check-double blue"></i>
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endwith %}
-                                </span>
+                                        {% endwith %}
+                                    </span>
+                                {% endif %}
+
+                                {% if msg.sender != request.user %}
+                                    <span class="emoji-reaction-wrapper" style="position: relative;">
+                                        <i class="fas fa-smile reaction-toggle"
+                                            title="React"
+                                            data-msg-id="{{ msg.id }}"
+                                            data-is-group="true"
+                                            style="cursor: pointer;"></i>
+                                        <div class="reaction-menu"
+                                            id="reaction-menu-{{ msg.id }}"
+                                            style="display: none; position: absolute; bottom: 20px; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 5px; padding: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10;">
+                                            {% for emoji in emoji_reactions %}
+                                                <button class="reaction-btn"
+                                                        data-msg-id="{{ msg.id }}"
+                                                        data-emoji="{{ emoji }}"
+                                                        data-is-group="true"
+                                                        data-group-id="{{ group.id }}"
+                                                        style="font-size: 18px; background: none; border: none; cursor: pointer; padding: 3px; margin: 0; display: inline-block;">
+                                                    {{ emoji }}
+                                                </button>
+                                            {% endfor %}
+                                        </div>
+                                    </span>
+                                {% endif %}
+
+                                <i class="fas fa-share forward-message-btn" title="Forward Message"
+                                    data-original-message-id="{{ msg.id }}"
+                                    data-original-message-type="group"
+                                    style="cursor: pointer;"></i>
+
+                                <i class="fa fa-trash delete-icon"
+                                    data-msg-id="{{ msg.id }}"
+                                    data-is-sender="{% if msg.sender.id == request.user.id %}true{% else %}false{% endif %}"
+                                    data-is-group="true"></i>
                             {% endif %}
-
-                            {% if msg.sender != request.user %}
-                                <span class="emoji-reaction-wrapper" style="position: relative;">
-                                    <i class="fas fa-smile reaction-toggle"
-                                        title="React"
-                                        data-msg-id="{{ msg.id }}"
-                                        data-is-group="true"
-                                        style="cursor: pointer;"></i>
-
-                                    <div class="reaction-menu"
-                                        id="reaction-menu-{{ msg.id }}"
-                                        style="display: none; position: absolute; bottom: 20px; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 5px; padding: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10;">
-                                        {% for emoji in emoji_reactions %}
-                                            <button class="reaction-btn"
-                                                    data-msg-id="{{ msg.id }}"
-                                                    data-emoji="{{ emoji }}"
-                                                    data-is-group="true"
-                                                    data-group-id="{{ group.id }}"
-                                                    style="font-size: 18px; background: none; border: none; cursor: pointer; padding: 3px; margin: 0; display: inline-block;">
-                                                {{ emoji }}
-                                            </button>
-                                        {% endfor %}
-                                    </div>
-                                </span>
-                            {% endif %}
-
-                            <i class="fas fa-share forward-message-btn" title="Forward Message"
-                                data-original-message-id="{{ msg.id }}"
-                                data-original-message-type="group"
-                                style="cursor: pointer;">
-                            </i>
-
-                            <i class="fa fa-trash delete-icon"
-                                data-msg-id="{{ msg.id }}"
-                                data-is-sender="{% if msg.sender.id == request.user.id %}true{% else %}false{% endif %}"
-                                data-is-group="true"></i>
                         </span>
                     </div>
                 {% endfor %}
@@ -271,9 +277,9 @@
                                 <label style="display: flex; align-items: center; cursor: pointer;">
                                     <input type="checkbox" name="forwardRecipient" value="{{ u.id }}" data-type="user" style="margin-right: 8px;">
                                     {% if u.profile_picture %}
-                                    <img src="{{ u.profile_picture.url }}" alt="{{ u.username }}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                                        <img src="{{ u.profile_picture.url }}" alt="{{ u.username }}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
                                     {% else %}
-                                    <img src="{% static 'default-profile.png' %}" alt="{{ u.username }}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                                        <img src="{% static 'default-profile.png' %}" alt="{{ u.username }}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
                                     {% endif %}
                                     {{ u.username }}
                                 </label>
@@ -290,9 +296,9 @@
                                 <label style="display: flex; align-items: center; cursor: pointer;">
                                     <input type="checkbox" name="forwardRecipient" value="{{ g_option.id }}" data-type="group" style="margin-right: 8px;">
                                     {% if g_option.icon %}
-                                    <img src="{{ g_option.icon.url }}" alt="{{ g_option.name }}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                                        <img src="{{ g_option.icon.url }}" alt="{{ g_option.name }}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
                                     {% else %}
-                                    <img src="{% static 'default-group.png' %}" alt="{{ g_option.name }}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                                        <img src="{% static 'default-group.png' %}" alt="{{ g_option.name }}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
                                     {% endif %}
                                     {{ g_option.name }}
                                 </label>
@@ -305,21 +311,21 @@
                 <button onclick="document.getElementById('forwardModal').style.display='none'" style="margin-top: 10px; padding: 10px 20px; background-color: #ccc; color: black; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
             </div>
         </div>
+
         <div class="chat-footer">
             <form method="POST" enctype="multipart/form-data" id="groupMessageForm">
                 {% csrf_token %}
-                
                 <textarea id="messageInput" name="message" rows="1" placeholder="Type a message..."></textarea>
                 <label for="fileInput" style="cursor: pointer;">
                     <i class="fas fa-paperclip"></i>
                 </label>
                 <input type="file" id="fileInput" name="file" style="display: none;">
-
                 <input type="hidden" id="messageTypeInput" name="message_type" value="text">
-
                 <button type="submit" id="messageSendButton">➤</button>
-             </form>
-            </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <style>
 .chat-bubble.deleted {
@@ -327,7 +333,6 @@
     background-color: #f0f0f0 !important;
     border-color: #e0e0e0 !important;
 }
-
 .chat-bubble.deleted .deleted-message {
     display: block;
     padding: 5px 0;
@@ -335,7 +340,6 @@
     font-size: 0.9em;
     color: #888;
 }
-
 .chat-bubble.deleted .reaction-display,
 .chat-bubble.deleted .message-time .fa-share,
 .chat-bubble.deleted .message-time .delete-icon,
@@ -346,25 +350,25 @@
 }
 </style>
 
-
 <div id="checkNewMessagesUrl" data-url="{% url 'check_new_messages' %}" style="display: none;"></div>
-<input type="hidden" id="toggleStarUrl" value="{% url 'toggle_starred_group_message' %}">
 
-
+{# ── FIXED: global-data now includes both star URLs and isGroup flag ── #}
 <script id="global-data" type="application/json">
-    {
-        "groupId": {{ group.id }},
-        "currentUserId": {{ request.user.id }},
-        "csrfToken": "{{ csrf_token }}"
-    }
+{
+    "groupId": {{ group.id }},
+    "currentUserId": {{ request.user.id }},
+    "csrfToken": "{{ csrf_token }}",
+    "isGroup": true,
+    "toggleStarUrl": "{% url 'toggle_starred_message' %}",
+    "toggleStarGroupUrl": "{% url 'toggle_starred_group_message' %}"
+}
 </script>
+
 <script>
     const CSRF_TOKEN = '{{ csrf_token }}';
 </script>
 
 <script type="module" src="{% static 'js/globals.js' %}"></script>
-
-
 <script type="module" src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
 <script type="module" src="{% static 'js/utils.js' %}"></script>
 <script type="module" src="{% static 'js/modals.js' %}"></script>
