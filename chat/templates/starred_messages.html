@@ -2,256 +2,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Starred Messages – Talkify</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starred Messages – Talkify</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #e5ddd5;
-      min-height: 100vh;
-    }
+        .page-header {
+            background: #128c7e;
+            color: #fff;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .page-header a { color: #fff; font-size: 20px; text-decoration: none; line-height: 1; }
+        .page-header h5 { margin: 0; font-size: 17px; font-weight: 600; }
 
-    .page-header {
-      background: #128c7e;
-      color: #fff;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .page-header a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-    }
-    .page-header h1 {
-      font-size: 17px;
-      font-weight: 600;
-    }
-    .page-header span {
-      font-size: 13px;
-      opacity: .8;
-    }
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #128c7e;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 18px 16px 6px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
 
-    .content {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 12px 12px 32px;
-    }
+        .msg-card {
+            background: #fff;
+            margin: 4px 10px;
+            border-radius: 10px;
+            padding: 12px 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.07);
+        }
 
-    .section-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #128c7e;
-      text-transform: uppercase;
-      letter-spacing: .6px;
-      padding: 16px 4px 8px;
-    }
+        .msg-meta {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .msg-meta .sender {
+            font-weight: 600;
+            color: #128c7e;
+            font-size: 12px;
+        }
+        .msg-meta .timestamp { font-size: 11px; color: #bbb; }
 
-    .msg-card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-bottom: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,.08);
-      position: relative;
-    }
-    .msg-card .meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-    .msg-card .meta img {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      object-fit: cover;
-      flex-shrink: 0;
-    }
-    .msg-card .meta .name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #111;
-    }
-    .msg-card .meta .group-tag {
-      font-size: 11px;
-      background: #e8f5f3;
-      color: #128c7e;
-      padding: 2px 8px;
-      border-radius: 10px;
-    }
-    .msg-card .meta .time {
-      font-size: 11px;
-      color: #aaa;
-      margin-left: auto;
-    }
-    .msg-card .body {
-      font-size: 14px;
-      color: #333;
-      line-height: 1.45;
-      word-break: break-word;
-    }
-    .msg-card .body img {
-      max-width: 200px;
-      border-radius: 8px;
-      margin-top: 6px;
-      display: block;
-    }
-    .msg-card .body video,
-    .msg-card .body audio {
-      margin-top: 6px;
-      max-width: 100%;
-      border-radius: 8px;
-    }
-    .msg-card .body a.file-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 6px;
-      color: #128c7e;
-      font-size: 13px;
-      text-decoration: none;
-    }
-    .msg-card .body a.file-link:hover { text-decoration: underline; }
+        .msg-text {
+            font-size: 14px;
+            color: #222;
+            word-break: break-word;
+            line-height: 1.5;
+        }
+        .msg-text.deleted { font-style: italic; color: #aaa; }
 
-    .star-badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      color: #f4b400;
-      font-size: 14px;
-    }
+        .msg-file { margin-top: 8px; }
+        .msg-file img { max-width: 200px; border-radius: 8px; display: block; }
+        .msg-file audio,
+        .msg-file video { max-width: 100%; margin-top: 4px; border-radius: 6px; }
+        .msg-file a {
+            color: #128c7e;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+        }
 
-    .empty-state {
-      text-align: center;
-      padding: 32px 16px;
-      color: #888;
-      font-size: 14px;
-    }
-    .empty-state i {
-      font-size: 36px;
-      color: #ccc;
-      margin-bottom: 10px;
-      display: block;
-    }
+        .star-badge {
+            color: #f4b400;
+            font-size: 12px;
+        }
 
-    .divider {
-      height: 1px;
-      background: #ddd;
-      margin: 8px 0 4px;
-    }
+        .group-badge {
+            background: #e8f5e9;
+            color: #128c7e;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
 
-    @media (max-width: 480px) {
-      .content { padding: 8px 8px 32px; }
-      .msg-card { padding: 10px 12px; }
-    }
-  </style>
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px 30px;
+            color: #aaa;
+        }
+        .empty-state i {
+            font-size: 52px;
+            display: block;
+            margin-bottom: 14px;
+            color: #ddd;
+        }
+        .empty-state p { font-size: 14px; margin: 0; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 14px 16px 0;
+            color: #128c7e;
+            font-size: 13px;
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 6px 10px;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="page-header">
-    <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
-    <div>
-      <h1>Starred Messages</h1>
-    </div>
-  </div>
+<div class="page-header">
+    <a href="{% url 'chat_home' %}" title="Back">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h5><i class="fas fa-star" style="color:#ffd700;margin-right:6px;"></i> Starred Messages</h5>
+</div>
 
-  <div class="content">
-
-    <!-- DIRECT MESSAGES -->
-    <div class="section-label"><i class="fas fa-star" style="margin-right:5px;"></i>Direct Messages</div>
-
-    {% for msg in direct_starred %}
-    <div class="msg-card">
-      <i class="fas fa-star star-badge"></i>
-      <div class="meta">
-        <img src="{% if msg.sender.profile_picture %}{{ msg.sender.profile_picture.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
-             alt="{{ msg.sender.username }}"
-             onerror="this.src='{% static 'default-profile.png' %}'">
-        <span class="name">{{ msg.sender.username }}</span>
-        <span style="font-size:11px;color:#aaa;">→ {{ msg.receiver.username }}</span>
-        <span class="time">{{ msg.timestamp|date:"d M, H:i" }}</span>
-      </div>
-      <div class="body">
-        {% if msg.message_type == 'text' %}
-          {{ msg.message }}
-        {% elif msg.message_type == 'image' and msg.file %}
-          <img src="{{ msg.file.url }}" alt="image">
-          {% if msg.message %}<p style="margin-top:4px;">{{ msg.message }}</p>{% endif %}
-        {% elif msg.message_type == 'video' and msg.file %}
-          <video src="{{ msg.file.url }}" controls></video>
-        {% elif msg.message_type == 'audio' and msg.file %}
-          <audio src="{{ msg.file.url }}" controls></audio>
-        {% elif msg.file %}
-          <a href="{{ msg.file.url }}" download class="file-link">
-            <i class="fas fa-file-download"></i> {{ msg.file.name|slice:"20:" }}
-          </a>
-        {% else %}
-          <span style="color:#aaa;font-style:italic;">File unavailable</span>
-        {% endif %}
-      </div>
-    </div>
-    {% empty %}
+{% if not direct_starred and not group_starred %}
     <div class="empty-state">
-      <i class="fas fa-star"></i>
-      No starred direct messages yet.
+        <i class="fas fa-star"></i>
+        <p>No starred messages yet.</p>
+        <p style="margin-top:6px;font-size:12px;">Tap the ⭐ on any message to star it.</p>
     </div>
-    {% endfor %}
+{% else %}
+
+    <!-- ── DIRECT MESSAGES ── -->
+    <div class="section-label">
+        <i class="fas fa-user"></i> Direct Messages
+        <span style="color:#bbb;font-weight:400;">({{ direct_starred.count }})</span>
+    </div>
+
+    {% if direct_starred %}
+        {% for msg in direct_starred %}
+        <div class="msg-card">
+            <div class="msg-meta">
+                <span>
+                    <span class="star-badge"><i class="fas fa-star"></i></span>
+                    <span class="sender">
+                        {% if msg.sender == request.user %}You{% else %}{{ msg.sender.username }}{% endif %}
+                    </span>
+                    <span style="color:#bbb;margin-left:4px;">→</span>
+                    <span style="margin-left:4px;color:#555;font-size:11px;">
+                        {% if msg.receiver == request.user %}You{% else %}{{ msg.receiver.username }}{% endif %}
+                    </span>
+                </span>
+                <span class="timestamp">{{ msg.timestamp|date:"M d, Y H:i" }}</span>
+            </div>
+
+            {% if msg.is_deleted %}
+                <div class="msg-text deleted">
+                    <i class="fas fa-ban" style="font-size:10px;"></i> This message was deleted
+                </div>
+            {% else %}
+                {% if msg.message %}
+                    <div class="msg-text">{{ msg.message }}</div>
+                {% endif %}
+                {% if msg.file %}
+                    <div class="msg-file">
+                        {% if msg.message_type == "image" %}
+                            <img src="{{ msg.file.url }}" alt="Image">
+                        {% elif msg.message_type == "video" %}
+                            <video controls><source src="{{ msg.file.url }}"></video>
+                        {% elif msg.message_type == "audio" %}
+                            <audio controls><source src="{{ msg.file.url }}"></audio>
+                        {% else %}
+                            <a href="{{ msg.file.url }}" target="_blank" download>
+                                <i class="fas fa-file-download"></i>
+                                {{ msg.file.name|basename }}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <div style="margin-top:8px;">
+                    <a href="{% url 'chat_detail' msg.sender.id %}" style="font-size:12px;color:#128c7e;text-decoration:none;">
+                        <i class="fas fa-external-link-alt" style="font-size:10px;"></i> Go to chat
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align:center;padding:16px 20px;color:#bbb;font-size:13px;">
+            No starred direct messages yet.
+        </div>
+    {% endif %}
 
     <div class="divider"></div>
 
-    <!-- GROUP MESSAGES -->
-    <div class="section-label"><i class="fas fa-users" style="margin-right:5px;"></i>Group Messages</div>
-
-    {% for msg in group_starred %}
-    <div class="msg-card">
-      <i class="fas fa-star star-badge"></i>
-      <div class="meta">
-        <img src="{% if msg.sender.profile_picture %}{{ msg.sender.profile_picture.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
-             alt="{{ msg.sender.username }}"
-             onerror="this.src='{% static 'default-profile.png' %}'">
-        <span class="name">{{ msg.sender.username }}</span>
-        <span class="group-tag"><i class="fas fa-users" style="font-size:10px;"></i> {{ msg.group.name }}</span>
-        <span class="time">{{ msg.timestamp|date:"d M, H:i" }}</span>
-      </div>
-      <div class="body">
-        {% if msg.message_type == 'text' %}
-          {{ msg.message }}
-        {% elif msg.message_type == 'image' and msg.file %}
-          <img src="{{ msg.file.url }}" alt="image">
-          {% if msg.message %}<p style="margin-top:4px;">{{ msg.message }}</p>{% endif %}
-        {% elif msg.message_type == 'video' and msg.file %}
-          <video src="{{ msg.file.url }}" controls></video>
-        {% elif msg.message_type == 'audio' and msg.file %}
-          <audio src="{{ msg.file.url }}" controls></audio>
-        {% elif msg.file %}
-          <a href="{{ msg.file.url }}" download class="file-link">
-            <i class="fas fa-file-download"></i> {{ msg.file.name|slice:"20:" }}
-          </a>
-        {% else %}
-          <span style="color:#aaa;font-style:italic;">File unavailable</span>
-        {% endif %}
-      </div>
+    <!-- ── GROUP MESSAGES ── -->
+    <div class="section-label">
+        <i class="fas fa-users"></i> Group Messages
+        <span style="color:#bbb;font-weight:400;">({{ group_starred.count }})</span>
     </div>
-    {% empty %}
-    <div class="empty-state">
-      <i class="fas fa-users"></i>
-      No starred group messages yet.
-    </div>
-    {% endfor %}
 
-  </div>
+    {% if group_starred %}
+        {% for msg in group_starred %}
+        <div class="msg-card">
+            <div class="msg-meta">
+                <span>
+                    <span class="star-badge"><i class="fas fa-star"></i></span>
+                    <span class="sender">
+                        {% if msg.sender == request.user %}You{% else %}{{ msg.sender.username }}{% endif %}
+                    </span>
+                    <span style="color:#bbb;margin-left:4px;">in</span>
+                    <span class="group-badge" style="margin-left:4px;">{{ msg.group.name }}</span>
+                </span>
+                <span class="timestamp">{{ msg.timestamp|date:"M d, Y H:i" }}</span>
+            </div>
+
+            {% if msg.deleted_for_everyone %}
+                <div class="msg-text deleted">
+                    <i class="fas fa-ban" style="font-size:10px;"></i> This message was deleted
+                </div>
+            {% else %}
+                {% if msg.message %}
+                    <div class="msg-text">{{ msg.message }}</div>
+                {% endif %}
+                {% if msg.file %}
+                    <div class="msg-file">
+                        {% if msg.message_type == "image" %}
+                            <img src="{{ msg.file.url }}" alt="Image">
+                        {% elif msg.message_type == "video" %}
+                            <video controls><source src="{{ msg.file.url }}"></video>
+                        {% elif msg.message_type == "audio" %}
+                            <audio controls><source src="{{ msg.file.url }}"></audio>
+                        {% else %}
+                            <a href="{{ msg.file.url }}" target="_blank" download>
+                                <i class="fas fa-file-download"></i>
+                                {{ msg.file.name|basename }}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <div style="margin-top:8px;">
+                    <a href="{% url 'group_chat_detail' msg.group.id %}" style="font-size:12px;color:#128c7e;text-decoration:none;">
+                        <i class="fas fa-external-link-alt" style="font-size:10px;"></i> Go to group
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align:center;padding:16px 20px;color:#bbb;font-size:13px;">
+            No starred group messages yet.
+        </div>
+    {% endif %}
+
+{% endif %}
+
+<div style="height:24px;"></div>
 
 </body>
 </html>
