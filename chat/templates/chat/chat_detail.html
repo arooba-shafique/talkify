@@ -273,7 +273,6 @@
             flex-direction: column;
             gap: 3px;
             background: #e5ddd5;
-            background-image: url("{% static 'chat-bg.png' %}");
             background-size: cover;
             background-position: center;
             -webkit-overflow-scrolling: touch;
@@ -906,7 +905,9 @@
 }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
+<!-- ✅ FIX: Load emoji-button as a regular deferred script BEFORE ES modules -->
+<script defer src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
+
 <script type="module" src="{% static 'js/globals.js' %}"></script>
 <script type="module" src="{% static 'js/utils.js' %}"></script>
 <script type="module" src="{% static 'js/modals.js' %}"></script>
