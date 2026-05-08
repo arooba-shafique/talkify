@@ -44,7 +44,13 @@
 </style>
 
 <div class="status-detail-wrapper">
-  <h2>{{ status.user.username }}'s Status</h2>
+  <h2>
+    {% if request.user == status.user %}
+      My Status
+    {% else %}
+      {{ status.user.username }}'s Status
+    {% endif %}
+  </h2>
   <img src="{{ status.image.url }}" alt="Status">
   <p>{{ status.caption }}</p>
   <p>Posted: {{ status.created_at|timesince }} ago</p>
