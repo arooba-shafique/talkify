@@ -5,18 +5,13 @@ Django settings for talkify project.
 from pathlib import Path
 import os
 
-try:
-    from decouple import config
-except ImportError:
-    config = lambda key, default=None, cast=None: os.environ.get(key, default)
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-in-production')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 
-DEBUG = config('DEBUG', default=False, cast=lambda v: v.lower() in ('true', '1', 'yes'))
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 INSTALLED_APPS = [
     'daphne',
