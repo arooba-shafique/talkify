@@ -124,7 +124,6 @@ def chat_home(request):
                 is_seen=False
              ).count()
 
-
         direct_chats_data.append({
             'user_obj': user,
             'last_message': last_message,
@@ -154,7 +153,6 @@ def chat_home(request):
                     group=group
                 ).exclude(sender=current_user).exclude(seen_by=current_user).count()
 
-
         group_chats_data.append({
             'group_obj': group,
             'last_message': last_group_message,
@@ -170,14 +168,11 @@ def chat_home(request):
         reverse=True
     )
 
-
     return render(request, 'chat/home.html', {
         'direct_chats_data': direct_chats_data, 
         'group_chats_data': group_chats_data,   
         'combined_chats_data': combined_chats_data, 
- 
     })
-
 
 
 def safe_ts(obj):
@@ -240,6 +235,7 @@ def chat_detail(request, user_id):
         defaults={'last_opened': timezone.now()}
     )
 
+    # Use StarredMessage (the single source of truth for direct message stars)
     starred_msg_ids = StarredMessage.objects.filter(user=request.user).values_list('message_id', flat=True)
 
     first_unread_msg = messages_qs.filter(
@@ -249,7 +245,6 @@ def chat_detail(request, user_id):
     ).order_by('timestamp').first()
 
     first_unread_msg_id = first_unread_msg.id if first_unread_msg else None
-
 
     if request.method == 'POST':
         form = ChatMessageForm(request.POST, request.FILES)
@@ -287,7 +282,6 @@ def chat_detail(request, user_id):
         form = ChatMessageForm()
     
     combined_chats = get_combined_chats(request.user)
-    
 
     return render(request, 'chat/chat_detail.html', {
         'receiver': receiver,
@@ -304,26 +298,29 @@ def chat_detail(request, user_id):
     })
 
 
-
 @login_required
 def group_chat_detail(request, group_id):
     group = get_object_or_404(ChatGroup, id=group_id)
 
     if request.user not in group.members.all():
         return redirect('chat_home')
+
     messages_qs = GroupMessage.objects.filter(
-    group=group,
-    deleted_for_everyone=False
-).exclude(
-    deleted_for=request.user
-).order_by('timestamp')
+        group=group,
+        deleted_for_everyone=False
+    ).exclude(
+        deleted_for=request.user
+    ).order_by('timestamp')
 
     emoji_reactions = ['😊', '😂', '❤️', '👍', '😢', '😮', '😡', '👏', '🎉', '💯']
-    starred_msg_ids = GroupMessage.objects.filter(
-        group=group,
-        is_starred=request.user
-        ).values_list('id', flat=True)
 
+    # Use GroupMessage.is_starred M2M (single source of truth for group stars)
+    starred_msg_ids = list(
+        GroupMessage.objects.filter(
+            group=group,
+            is_starred=request.user
+        ).values_list('id', flat=True)
+    )
 
     groups = ChatGroup.objects.filter(members=request.user)
     last_group_messages = {}
@@ -332,18 +329,18 @@ def group_chat_detail(request, group_id):
             group=g
         ).exclude(deleted_for=request.user).order_by('-timestamp').first()
         last_group_messages[g.id] = last_msg
+
     for msg in messages_qs:
         if request.user not in msg.seen_by.all():
             msg.seen_by.add(request.user)
 
-    
-
     groups = sorted(groups, key=lambda g: safe_ts(last_group_messages.get(g.id)), reverse=True)
+
     GroupChatView.objects.update_or_create(
         user=request.user,
         group=group,
         defaults={'last_opened': timezone.now()}
-        )
+    )
 
     users = User.objects.filter(in_contacts__owner=request.user)
     last_messages = {}
@@ -356,7 +353,6 @@ def group_chat_detail(request, group_id):
 
     users = sorted(users, key=lambda u: safe_ts(last_messages.get(u.id)), reverse=True)
 
-
     if request.method == 'POST':
         form = GroupMessageForm(request.POST, request.FILES)
         if form.is_valid():
@@ -367,10 +363,9 @@ def group_chat_detail(request, group_id):
             return redirect('group_chat_detail', group_id=group.id)
         else:
             print("Form errors:", form.errors)
-
     else:
-        
         form = GroupMessageForm()
+
     combined_chats = get_combined_chats(request.user)
 
     return render(request, 'groups/group_detail.html', {
@@ -386,7 +381,6 @@ def group_chat_detail(request, group_id):
         'combined_chats': combined_chats, 
         'starred_msg_ids': starred_msg_ids,
     })
-
 
 
 @login_required
@@ -410,7 +404,6 @@ def mark_seen(request, user_id):
             receiver=request.user,
             status__in=['sent', 'delivered']
         ).update(status='seen', is_seen=True)
-
         return JsonResponse({'status': 'ok', 'updated': updated})
     return JsonResponse({'error': 'unauthorized'}, status=403)
 
@@ -461,12 +454,10 @@ def view_single_status(request, status_id):
 @login_required
 def my_status_view(request):
     time_threshold = timezone.now() - timedelta(hours=24)
-    
     my_statuses = Status.objects.filter(
         user=request.user,
         created_at__gte=time_threshold
     ).order_by('-created_at')
-
     return render(request, 'status/my_status.html', {'statuses': my_statuses})
 
 @login_required
@@ -483,7 +474,6 @@ def add_contact(request):
             return JsonResponse({'success': True, 'message': f'{contact_user.username} added!'})
         except User.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User not found'})
-
     return render(request, 'contacts/add_contact.html')
 
 
@@ -514,7 +504,6 @@ def search_users(request):
             'profile_picture': u.profile_picture.url if u.profile_picture else None,
             'already_added': u.id in existing_contact_ids,
         })
-
     return JsonResponse({'users': results})
 
 
@@ -550,28 +539,21 @@ def profile_sidebar(request):
         user = request.user
         username = request.POST.get('username', '').strip()
         about = request.POST.get('about', '').strip()
-        
         if username:
             user.username = username
         if about:
             user.about = about
         if 'profile_picture' in request.FILES:
             user.profile_picture = request.FILES['profile_picture']
-            print(f"Saving profile picture: {request.FILES['profile_picture'].name}")  # debug
-        
         user.save()
-        print(f"Saved! Profile picture is now: {user.profile_picture}")  # debug
         return redirect('profile_sidebar')
-    
     return render(request, 'profile/profile_sidebar.html', {'user': request.user})
-
 
 
 @login_required
 def check_new_messages(request):
     new_messages = ChatMessage.objects.filter(receiver=request.user, status__in=["sent", "delivered"]).count()
     return JsonResponse({"new_messages": new_messages})
-
 
 
 @login_required
@@ -582,7 +564,6 @@ def chat_settings(request):
 @login_required
 def notification_settings(request):
     return render(request, 'settings/notifications.html')
-
 
 
 @login_required
@@ -597,14 +578,16 @@ def landing_page(request):
 
 @login_required
 def toggle_starred_message(request):
+    """
+    Single source of truth for direct message starring.
+    Uses StarredMessage model. Returns {is_starred: true/false}.
+    """
     if request.method == 'POST':
         msg_id = request.POST.get('message_id')
         if not msg_id:
             return JsonResponse({'success': False, 'error': 'No message ID provided'})
-
         try:
             msg = ChatMessage.objects.get(id=msg_id)
-
             starred, created = StarredMessage.objects.get_or_create(user=request.user, message=msg)
             if not created:
                 starred.delete()
@@ -613,9 +596,7 @@ def toggle_starred_message(request):
                 return JsonResponse({'success': True, 'is_starred': True})
         except ChatMessage.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Message not found'})
-
     return HttpResponseBadRequest('Invalid request')
-
 
 
 @csrf_exempt
@@ -626,31 +607,22 @@ def toggle_reaction(request):
             data = json.loads(request.body)
             message_id = data.get("message_id")
             emoji = data.get("emoji")
-
             msg = ChatMessage.objects.get(id=message_id)
-
             reaction, created = MessageReaction.objects.get_or_create(
                 user=request.user, message=msg
             )
-
             if not created and reaction.emoji == emoji:
                 reaction.delete()
             else:
                 reaction.emoji = emoji
                 reaction.save()
-
             reactions = MessageReaction.objects.filter(message=msg)
-            reactions_data = [
-                {"user": r.user.username, "emoji": r.emoji}
-                for r in reactions
-            ]
-
+            reactions_data = [{"user": r.user.username, "emoji": r.emoji} for r in reactions]
             return JsonResponse({"success": True, "reactions": reactions_data})
         except ChatMessage.DoesNotExist:
             return JsonResponse({"success": False, "error": "Message not found"})
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
-
     return JsonResponse({"success": False, "error": "Invalid request method"})
 
 @csrf_exempt
@@ -660,17 +632,14 @@ def send_reaction(request):
         data = json.loads(request.body)
         message_id = data.get("message_id")
         emoji = data.get("emoji")
-
         message = ChatMessage.objects.get(id=message_id)
         reaction, created = MessageReaction.objects.update_or_create(
             user=request.user,
             message=message,
             defaults={"emoji": emoji}
         )
-
         all_reactions = MessageReaction.objects.filter(message=message)
         reaction_data = [{"emoji": r.emoji, "user": r.user.username} for r in all_reactions]
-
         return JsonResponse({"success": True, "reactions": reaction_data})
     return JsonResponse({"success": False}, status=400)
 
@@ -682,7 +651,6 @@ def add_reaction(request):
         data = json.loads(request.body)
         emoji = data.get("emoji")
         msg_id = data.get("message_id")
-
         try:
             msg = ChatMessage.objects.get(id=msg_id)
             reaction, created = MessageReaction.objects.update_or_create(
@@ -694,14 +662,12 @@ def add_reaction(request):
             return JsonResponse({"success": True, "reactions_html": reactions_html})
         except ChatMessage.DoesNotExist:
             return JsonResponse({"success": False, "error": "Message not found"})
-
     return JsonResponse({"success": False, "error": "Invalid method"})
 
 @login_required
 @require_POST 
 def delete_for_me(request, message_id):
     msg = get_object_or_404(ChatMessage, id=message_id)
-
     if (
         msg.sender == request.user or 
         msg.receiver == request.user or 
@@ -709,49 +675,43 @@ def delete_for_me(request, message_id):
     ):
         msg.deleted_for.add(request.user)
         return JsonResponse({'success': True, 'message': 'Message deleted for you.'})
-    
     return JsonResponse({'success': False, 'error': 'Not authorized to delete this message.'}, status=403)
-
 
 
 @login_required
 @require_POST
 def delete_for_everyone(request, message_id):
     msg = get_object_or_404(ChatMessage, id=message_id)
-
     if msg.is_deleted:
         return JsonResponse({'success': False, 'error': 'Message already deleted for everyone.'}, status=400)
-
     if msg.sender == request.user:
         msg.message = ""
         msg.is_deleted = True
         msg.save()
         return JsonResponse({'success': True, 'message': 'Message deleted for everyone.'})
-    
     return JsonResponse({'success': False, 'error': 'You can only delete your own messages for everyone.'}, status=403)
 
 
 @login_required
 def starred_messages(request):
+    """
+    Direct messages: queried via StarredMessage model.
+    Group messages: queried via GroupMessage.is_starred M2M.
+    """
     direct_starred = ChatMessage.objects.filter(
         id__in=StarredMessage.objects.filter(user=request.user).values_list('message_id', flat=True)
     )
-
     group_starred = GroupMessage.objects.filter(is_starred=request.user)
-
-    context = {
+    return render(request, 'starred_messages.html', {
         'direct_starred': direct_starred,
         'group_starred': group_starred,
-    }
-    return render(request, 'starred_messages.html', context)
-
+    })
 
 
 @login_required
 def view_profile(request, user_id):
     other_user = get_object_or_404(User, id=user_id)
     return render(request, 'profile/view_profile.html', {'other_user': other_user})
-
 
 
 @login_required
@@ -765,13 +725,10 @@ def create_group(request):
             for member in members:
                 group.members.add(member)
             group.members.add(request.user)
-
             return redirect('chat_home')
     else:
         form = GroupForm()
-
     return render(request, 'groups/create_group.html', {'form': form})
-
 
 
 @csrf_exempt 
@@ -781,10 +738,8 @@ def toggle_group_reaction(request):
             data = json.loads(request.body)
             message_id = data.get("message_id")
             emoji = data.get("emoji")
-
             if not message_id or not emoji:
                 return JsonResponse({"success": False, "error": "Missing message_id or emoji"}, status=400)
-
             msg = get_object_or_404(GroupMessage, id=message_id) 
             try:
                 reaction = GroupMessageReaction.objects.get(user=request.user, message=msg)
@@ -803,9 +758,7 @@ def toggle_group_reaction(request):
                 {"message": msg, 'is_group': True},
                 request=request 
             )
-
             return JsonResponse({"success": True, "action": action, "reactions_html": reactions_html})
-
         except GroupMessage.DoesNotExist:
             return JsonResponse({"success": False, "error": "Group message not found."}, status=404) 
         except json.JSONDecodeError:
@@ -818,16 +771,13 @@ def toggle_group_reaction(request):
 @login_required
 def update_group_icon(request, group_id):
     group = get_object_or_404(ChatGroup, id=group_id)
-
     if request.user != group.admin:
         messages.error(request, "Only the group admin can update the icon.")
         return redirect('group_profile', group_id=group.id)
-
     if request.method == 'POST' and 'icon' in request.FILES:
         group.icon = request.FILES['icon']
         group.save()
         messages.success(request, "Group icon updated successfully.")
-
     return redirect('group_profile', group_id=group.id)
 
 @login_required
@@ -837,28 +787,21 @@ def delete_group_message(request, group_id, message_id):
     try:
         data = json.loads(request.body)
         delete_type = data.get('delete_type') 
-
         message = get_object_or_404(GroupMessage, id=message_id, group_id=group_id)
-
         if request.user not in message.group.members.all():
             return JsonResponse({'status': 'error', 'message': 'You are not a member of this group.'}, status=403)
-
         if delete_type == 'for_me': 
-           
             if request.user not in message.deleted_for.all():
                 message.deleted_for.add(request.user)
             return JsonResponse({'status': 'success', 'message': 'Message deleted for you.'})
-
         elif delete_type == 'for_everyone': 
             if message.sender != request.user:
                 return JsonResponse({'status': 'error', 'message': 'You can only delete your own messages for everyone.'}, status=403)
-
             message.deleted_for_everyone = True
             message.message = ''  
             message.file = None   
             message.is_forwarded = False 
             message.save()
-
             return JsonResponse({
                 'status': 'success',
                 'message': 'Message deleted for everyone.',
@@ -868,16 +811,13 @@ def delete_group_message(request, group_id, message_id):
             })
         else:
             return JsonResponse({'status': 'error', 'message': 'Invalid delete type provided.'}, status=400)
-
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON format.'}, status=400)
     except GroupMessage.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Message not found.'}, status=404)
     except Exception as e:
-        import traceback
         traceback.print_exc() 
         return JsonResponse({'status': 'error', 'message': f'An unexpected error occurred: {str(e)}'}, status=500)
-
 
 
 def mark_group_message_delivered(request, group_id):
@@ -888,31 +828,22 @@ def storage_settings(request):
     return render(request, 'chat/storage_settings.html')
 
 
-
 def terms_of_service(request):
     return render(request, 'settings/terms.html')
-
-
 
 
 def contact_support(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         issue = request.POST.get('issue')
-
-
         messages.success(request, "Your issue is submitted.")
         return redirect('contact_support')  
-
     return render(request, 'settings/support.html')  
-
 
 
 @login_required
 def blocked_contacts(request):
     return render(request, 'settings/blocked_contacts.html') 
-
-
 
 
 def safe_ts(obj):
@@ -994,34 +925,31 @@ def get_combined_chats(user):
             'unread_count': unread_count
         })
 
-
     combined_chats = user_data + group_data
     combined_chats.sort(key=lambda x: x['timestamp'], reverse=True)
-
     return combined_chats
 
 
 @login_required
 @require_POST
 def toggle_starred_group_message(request):
+    """
+    Single source of truth for group message starring.
+    Uses GroupMessage.is_starred M2M. Returns {is_starred: true/false}.
+    """
     msg_id = request.POST.get('message_id')
-
     if not msg_id:
         return JsonResponse({'success': False, 'error': 'No message ID provided'})
-
     try:
         msg = GroupMessage.objects.get(id=msg_id)
-
         if request.user in msg.is_starred.all():
             msg.is_starred.remove(request.user)
             return JsonResponse({'success': True, 'is_starred': False})
         else:
             msg.is_starred.add(request.user)
             return JsonResponse({'success': True, 'is_starred': True})
-
     except GroupMessage.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Group message not found'})
-
 
 
 def render_reactions_html(message, is_group, request):
@@ -1034,17 +962,14 @@ def group_message_react(request, group_id, message_id):
     try:
         data = json.loads(request.body)
         emoji = data.get('emoji')
-
         if not emoji:
             return JsonResponse({'success': False, 'error': 'Missing emoji.'}, status=400)
         message = get_object_or_404(GroupMessage, id=message_id, group__id=group_id)
-
         reaction, created = GroupMessageReaction.objects.get_or_create(
             message=message,
             user=request.user,
             defaults={'emoji': emoji}
         )
-
         if not created and reaction.emoji == emoji:
             reaction.delete()
             action = 'removed'
@@ -1053,21 +978,16 @@ def group_message_react(request, group_id, message_id):
             reaction.save()
             action = 'updated'
         else:
-            
             action = 'added'
-
         reactions_html = render_reactions_html(message, is_group=True, request=request)
         return JsonResponse({'success': True, 'action': action, 'reactions_html': reactions_html})
-
     except GroupMessage.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Group message not found or not in this group.'}, status=404)
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'Invalid JSON in request body.'}, status=400)
     except Exception as e:
-        import traceback
         traceback.print_exc() 
         return JsonResponse({'success': False, 'error': f'An unexpected error occurred: {str(e)}'}, status=500)
-
 
 
 @csrf_exempt
@@ -1095,14 +1015,12 @@ def forward_to_user(request):
                 return JsonResponse({"success": False, "error": "Invalid original message type provided."}, status=400)
 
             target_user = User.objects.get(id=target_user_id)
-
             message_content = getattr(original_message, 'message', '')
             message_file_instance = getattr(original_message, 'file', None)
             message_type = getattr(original_message, 'message_type', 'text')
 
             forwarded_chat_instance = None
             forwarded_group_message_instance = None
-
             if original_message_type == 'chat':
                 forwarded_chat_instance = original_message
             elif original_message_type == 'group':
@@ -1123,12 +1041,9 @@ def forward_to_user(request):
                     full_file_url = request.build_absolute_uri(message_file_instance.url)
                     response = requests.get(full_file_url, stream=True)
                     response.raise_for_status()
-
                     final_filename = os.path.basename(urlparse(message_file_instance.url).path)
                     new_chat_message.file.save(final_filename, ContentFile(response.content), save=True)
-
                 except Exception as e:
-                    print(f"DEBUG: Error downloading or saving forwarded file for chat message: {e}")
                     traceback.print_exc()
                     return JsonResponse({'success': False, 'error': f'Failed to process forwarded file: {e}'}, status=500)
 
@@ -1170,7 +1085,6 @@ def forward_to_group(request):
                 return JsonResponse({"success": False, "error": "Invalid original message type provided."}, status=400)
 
             target_group = ChatGroup.objects.get(id=group_id)
-
             if request.user not in target_group.members.all():
                 return JsonResponse({"success": False, "error": "You are not a member of the target group."}, status=403)
 
@@ -1191,12 +1105,9 @@ def forward_to_group(request):
                     full_file_url = request.build_absolute_uri(message_file_instance.url)
                     response = requests.get(full_file_url, stream=True)
                     response.raise_for_status()
-
                     final_filename = os.path.basename(urlparse(message_file_instance.url).path)
                     new_group_message.file.save(final_filename, ContentFile(response.content), save=True)
-
                 except Exception as e:
-                    print(f"DEBUG: Error downloading or saving forwarded file for group message: {e}")
                     traceback.print_exc()
                     return JsonResponse({'success': False, 'error': f'Failed to process forwarded file: {e}'}, status=500)
 
@@ -1225,7 +1136,6 @@ def forward_to_group(request):
 def get_message_details(request, message_type, message_id): 
     message = None
     is_group_message = False
-
     try:
         if message_type == 'chat':
             message = ChatMessage.objects.get(id=message_id)
@@ -1235,7 +1145,6 @@ def get_message_details(request, message_type, message_id):
             is_group_message = True
         else:
             return JsonResponse({"success": False, "error": "Invalid message type provided in URL."}, status=400)
-
     except (ChatMessage.DoesNotExist, GroupMessage.DoesNotExist):
         return JsonResponse({'success': False, 'error': 'Message not found'}, status=404)
 
@@ -1245,7 +1154,6 @@ def get_message_details(request, message_type, message_id):
     else: 
         if request.user != message.sender and request.user != message.receiver:
             return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
-  
 
     message_text = message.message if hasattr(message, 'message') else None
     file_url = None
@@ -1270,42 +1178,6 @@ def get_message_details(request, message_type, message_id):
                       (request.user in message.deleted_for.all() if hasattr(message, 'deleted_for') else False)
     })
 
-@csrf_exempt
-@login_required
-def star_message(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        msg = get_object_or_404(ChatMessage, id=data["message_id"])
-        if request.user in msg.is_starred.all():
-            msg.is_starred.remove(request.user)
-            return JsonResponse({"status": "unstarred"})
-        else:
-            msg.is_starred.add(request.user)
-            return JsonResponse({"status": "starred"})
-
-
-@csrf_exempt
-@login_required
-def star_group_message(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            message_id = data.get("message_id")
-
-            message = get_object_or_404(GroupMessage, id=message_id)
-
-            if request.user in message.is_starred.all():
-                message.is_starred.remove(request.user)
-                return JsonResponse({"status": "unstarred"})
-            else:
-                message.is_starred.add(request.user)
-                return JsonResponse({"status": "starred"})
-
-        except (KeyError, json.JSONDecodeError):
-            return JsonResponse({"error": "Invalid request"}, status=400)
-    
-    return JsonResponse({"error": "Invalid HTTP method"}, status=405)
-
 
 @csrf_exempt
 def upload_group_file(request):
@@ -1316,7 +1188,6 @@ def upload_group_file(request):
 
         if not request.user.is_authenticated:
             return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
-
         if not file:
             return JsonResponse({'success': False, 'error': 'No file provided'})
 
@@ -1369,11 +1240,9 @@ def privacy_policy(request):
 @login_required
 def edit_group(request, group_id):
     group = get_object_or_404(ChatGroup, id=group_id)
-
     if request.user != group.admin:
         messages.warning(request, "Only group admins can edit the group.")
         return redirect('group_chat_detail', group_id=group.id)
-
     if request.method == 'POST':
         form = GroupEditForm(request.POST, instance=group)
         if form.is_valid():
@@ -1382,5 +1251,4 @@ def edit_group(request, group_id):
             return redirect('group_chat_detail', group_id=group.id)
     else:
         form = GroupEditForm(instance=group)
-
     return render(request, 'edit_group.html', {'form': form, 'group': group})
