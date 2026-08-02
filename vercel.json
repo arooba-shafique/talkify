@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "talkify/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "talkify/wsgi.py"
+    }
+  ]
+}
